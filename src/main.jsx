@@ -5,6 +5,11 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
+import axios from 'axios';
+
+// Configure global API baseURL
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 
 // Import pages
 import Login from './pages/Login';
