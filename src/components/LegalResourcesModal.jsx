@@ -261,7 +261,7 @@ const LegalResourcesModal = ({ isOpen, onClose }) => {
         {/* Disclaimer & Footer */}
         <div className="mt-8 pt-6 border-t border-white/5 space-y-5 text-center">
           <p className="text-[10px] text-slate-500 leading-relaxed max-w-lg mx-auto font-medium">
-            <span className="font-bold text-slate-450">Disclaimer:</span> LexAI is not a law firm. This information is for educational purposes only. Always consult a qualified lawyer for professional legal advice.
+            <span className="font-bold text-slate-450">Disclaimer:</span> LegalMind is not a law firm. This information is for educational purposes only. Always consult a qualified lawyer for professional legal advice.
           </p>
           <button
             onClick={onClose}

@@ -60,7 +60,7 @@ const Sidebar = ({ activePage, isSidebarOpen, setIsSidebarOpen }) => {
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-900/60 text-indigo-400">
             <div className="flex items-center space-x-2">
               <Scale className="h-7 w-7" />
-              <span className="text-xl font-extrabold text-white tracking-wider">LexAI</span>
+              <span className="text-xl font-extrabold text-white tracking-wider">LegalMind</span>
             </div>
             {/* Mobile Close Button */}
             <button 

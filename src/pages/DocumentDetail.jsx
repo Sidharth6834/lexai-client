@@ -147,7 +147,7 @@ const DocumentDetail = () => {
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.setAttribute('download', `LexAI_Report_${doc.name.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+      link.setAttribute('download', `LegalMind_Report_${doc.name.replace(/[^a-z0-9]/gi, '_')}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
@@ -284,7 +284,7 @@ const DocumentDetail = () => {
           </button>
           <div className="flex items-center space-x-2 text-indigo-400">
             <Scale className="h-6 w-6" />
-            <span className="text-lg font-bold text-white tracking-wide">ScaleAI</span>
+            <span className="text-lg font-bold text-white tracking-wide">LegalMind</span>
           </div>
           <div className="h-8 w-8 rounded-full bg-indigo-650 flex items-center justify-center text-white font-bold text-xs shadow-md">
             {getInitials(user?.name)}
@@ -343,7 +343,7 @@ const DocumentDetail = () => {
         </button>
         <div className="flex items-center space-x-2 text-indigo-400">
           <Scale className="h-6 w-6" />
-          <span className="text-lg font-bold text-white tracking-wide">LexAI</span>
+          <span className="text-lg font-bold text-white tracking-wide">LegalMind</span>
         </div>
         <div className="h-8 w-8 rounded-full bg-indigo-650 flex items-center justify-center text-white font-bold text-xs shadow-md">
           {getInitials(user?.name)}

@@ -109,7 +109,7 @@ const SharedDocument = () => {
           <h2 className="text-xl font-black text-white mb-2 tracking-tight">Access Link Unavailable</h2>
           <p className="text-slate-400 text-xs leading-relaxed mb-6 font-semibold">{error}</p>
           <Link to="/register" className="w-full py-3.5 px-4 rounded-xl text-xs font-black text-white btn-gradient text-center shadow-lg transition flex items-center justify-center space-x-2">
-            <span>Try LexAI for Free</span>
+            <span>Try LegalMind for Free</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -127,7 +127,7 @@ const SharedDocument = () => {
 
       {/* HEADER PUBLIC BANNER */}
       <div className="w-full bg-gradient-to-r from-indigo-950/90 to-violet-955/90 backdrop-blur-md border-b border-indigo-500/20 py-3 px-4 text-center text-xs font-bold text-slate-205 flex flex-col sm:flex-row items-center justify-center gap-3 relative z-20 shadow-md">
-        <span>Shared via <span className="text-white font-extrabold">LexAI</span> — Run legal audits on your own agreements.</span>
+        <span>Shared via <span className="text-white font-extrabold">LegalMind</span> — Run legal audits on your own agreements.</span>
         <Link 
           to="/register" 
           className="px-4 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition text-[11px] font-black tracking-wide flex items-center space-x-1.5 shadow"
@@ -141,7 +141,7 @@ const SharedDocument = () => {
       <nav className="max-w-5xl mx-auto w-full px-6 pt-6 flex justify-between items-center relative z-10">
         <div className="flex items-center space-x-2 text-indigo-400">
           <Scale className="h-8 w-8" />
-          <span className="text-2xl font-extrabold text-white tracking-wider">LexAI</span>
+          <span className="text-2xl font-extrabold text-white tracking-wider">LegalMind</span>
         </div>
         <Link 
           to="/login" 
@@ -368,7 +368,7 @@ const SharedDocument = () => {
           </div>
         )}
         <div>
-          &copy; {new Date().getFullYear()} LexAI. All rights reserved.
+          &copy; {new Date().getFullYear()} LegalMind. All rights reserved.
         </div>
       </footer>
       <LegalResourcesModal 

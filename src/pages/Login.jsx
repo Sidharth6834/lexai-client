@@ -94,7 +94,7 @@ const Login = () => {
         {/* Branding Logo Header */}
         <div className="flex items-center space-x-2.5 text-indigo-400">
           <Scale className="h-9 w-9" />
-          <span className="text-2xl font-extrabold text-white tracking-wider">LexAI</span>
+          <span className="text-2xl font-extrabold text-white tracking-wider">LegalMind</span>
         </div>
 
         {/* Feature Presentation */}
@@ -109,7 +109,7 @@ const Login = () => {
               <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">with AI in Seconds.</span>
             </h1>
             <p className="text-slate-400 text-sm font-medium leading-relaxed">
-              LexAI uses advanced retrieval-augmented LLM technology to analyze covenants, translate complex legalese, flag risks, and answer specific questions in real-time.
+              LegalMind uses advanced retrieval-augmented LLM technology to analyze covenants, translate complex legalese, flag risks, and answer specific questions in real-time.
             </p>
           </div>
 
@@ -199,7 +199,7 @@ const Login = () => {
 
         {/* Footer */}
         <div className="text-slate-500 text-xs font-semibold">
-          © {new Date().getFullYear()} LexAI Inc. All rights reserved.
+          © {new Date().getFullYear()} LegalMind Inc. All rights reserved.
         </div>
       </div>
 
@@ -210,10 +210,10 @@ const Login = () => {
         <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 lg:hidden mb-6">
           <div className="flex justify-center items-center space-x-2.5 text-indigo-400">
             <Scale className="h-9 w-9 animate-pulse" />
-            <span className="text-3xl font-extrabold text-white tracking-wider">ScaleAI</span>
+            <span className="text-3xl font-extrabold text-white tracking-wider">LegalMind</span>
           </div>
           <h2 className="mt-4 text-center text-2xl font-extrabold text-white tracking-tight">
-            Welcome to LexAI
+            Welcome to LegalMind
           </h2>
           <p className="mt-1 text-center text-xs text-slate-400 font-medium">
             Analyze and manage your legal documents securely

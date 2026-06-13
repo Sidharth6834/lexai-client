@@ -81,7 +81,7 @@ const ForgotPassword = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center items-center space-x-2 text-indigo-400">
           <Scale className="h-10 w-10 animate-pulse" />
-          <span className="text-3xl font-extrabold text-white tracking-wider">LexAI</span>
+          <span className="text-3xl font-extrabold text-white tracking-wider">LegalMind</span>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-white tracking-tight">
           Reset Password

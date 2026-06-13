@@ -197,7 +197,7 @@ const Documents = () => {
         </button>
         <div className="flex items-center space-x-2 text-indigo-400">
           <Scale className="h-6 w-6" />
-          <span className="text-lg font-bold text-white tracking-wide">LexAI</span>
+          <span className="text-lg font-bold text-white tracking-wide">LegalMind</span>
         </div>
         <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
           {getInitials(user?.name)}
