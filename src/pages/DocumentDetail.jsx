@@ -20,7 +20,9 @@ import {
   Scale,
   BarChart2,
   Calendar,
-  Share2
+  Share2,
+  AlertOctagon,
+  RefreshCw
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import DocumentDetailSkeleton from '../components/skeletons/DocumentDetailSkeleton';
@@ -37,6 +39,7 @@ const DocumentDetail = () => {
   const [doc, setDoc] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview'); // Default to Risk Overview
+  const [retrying, setRetrying] = useState(false);
   
   // Collapsed clauses tracker (stores clause index key)
   const [expandedClauses, setExpandedClauses] = useState({});
@@ -131,6 +134,26 @@ const DocumentDetail = () => {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [chatMessages, activeTab]);
+
+  // Handle retrying failed analysis
+  const handleRetryAnalysis = async () => {
+    try {
+      setRetrying(true);
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      await axios.post(`/api/documents/${id}/retry`, {}, config);
+      
+      // Update doc status locally to trigger polling
+      setDoc(prev => prev ? { ...prev, status: 'uploaded' } : null);
+      toast.success('Retrying document analysis...');
+    } catch (err) {
+      console.error('Failed to retry analysis:', err);
+      toast.error(err.response?.data?.message || 'Failed to retry analysis');
+    } finally {
+      setRetrying(false);
+    }
+  };
 
   // Handle report downloads
   const handleDownloadReport = async () => {
@@ -487,6 +510,38 @@ const DocumentDetail = () => {
             </div>
           )}
 
+          {/* FAILED BANNER */}
+          {doc.status === 'failed' && (
+            <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-rose-400 shadow-md">
+              <div className="flex items-start space-x-3">
+                <AlertOctagon className="h-5 w-5 mt-0.5 flex-shrink-0 text-rose-500 animate-pulse" />
+                <div>
+                  <p className="text-sm font-bold text-white">AI analysis failed</p>
+                  <p className="text-xs text-rose-400/80 mt-0.5">
+                    We encountered an issue during analysis. This typically happens if the AI server was asleep or timed out.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleRetryAnalysis}
+                disabled={retrying}
+                className="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:bg-rose-800 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center space-x-1.5 cursor-pointer shrink-0"
+              >
+                {retrying ? (
+                  <>
+                    <div className="h-3 w-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Retrying...</span>
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    <span>Retry Analysis</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
           {/* LAWYER CONNECT CTA BANNER */}
           {doc.status === 'complete' && doc.riskLevel === 'risky' && (
             <LawyerConnectCTA 
@@ -519,7 +574,19 @@ const DocumentDetail = () => {
             
             {/* TAB 0: RISK HEATMAP OVERVIEW */}
             {activeTab === 'overview' && (
-              doc.status !== 'complete' ? (
+              doc.status === 'failed' ? (
+                <div className="space-y-6 max-w-5xl mx-auto">
+                  <div className="glass-card rounded-3xl p-12 border border-white/5 flex flex-col items-center space-y-4 text-center">
+                    <div className="p-4 bg-rose-500/10 rounded-full text-rose-500 border border-rose-500/20">
+                      <AlertOctagon className="h-10 w-10 animate-bounce" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white">Analysis Failed</h3>
+                    <p className="text-sm text-slate-400 max-w-md leading-relaxed font-semibold">
+                      The legal risk audit failed to complete. This is usually temporary and occurs if the backend AI space is sleeping or busy. Please click "Retry Analysis" above to wake up the AI space and try again.
+                    </p>
+                  </div>
+                </div>
+              ) : doc.status !== 'complete' ? (
                 /* Skeleton loader for RiskOverview */
                 <div className="space-y-6 max-w-5xl mx-auto">
                   <div className="glass-card rounded-3xl p-8 border border-white/5 animate-pulse flex flex-col items-center space-y-4">
@@ -563,13 +630,20 @@ const DocumentDetail = () => {
                       <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
                       <span>Executive Summary</span>
                     </h2>
-                    {doc.status !== 'complete' ? (
+                    {doc.status === 'failed' ? (
+                      <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
+                        <AlertOctagon className="h-8 w-8 text-rose-500" />
+                        <p className="text-xs text-slate-400 font-semibold max-w-sm">Unable to generate summary because document analysis failed.</p>
+                      </div>
+                    ) : doc.status !== 'complete' ? (
                       <div className="space-y-3">
                         <div className="h-4 bg-slate-900/60 rounded animate-pulse w-full"></div>
                         <div className="h-4 bg-slate-900/60 rounded animate-pulse w-5/6"></div>
                         <div className="h-4 bg-slate-900/60 rounded animate-pulse w-4/6"></div>
                         <p className="text-xs text-slate-500 italic mt-4">Waiting for AI analysis to construct summary...</p>
                       </div>
+                    ) : !doc.summary ? (
+                      <p className="text-sm text-slate-500 italic">No summary available. This can happen if the document text is empty or unreadable.</p>
                     ) : (
                       <p className="text-sm text-slate-300 leading-relaxed font-medium">
                         {doc.summary}
@@ -623,7 +697,17 @@ const DocumentDetail = () => {
             {/* TAB 2: CLAUSE ANALYSIS */}
             {activeTab === 'clauses' && (
               <div className="space-y-6 max-w-5xl">
-                {doc.status !== 'complete' || !doc.clauses || doc.clauses.length === 0 ? (
+                {doc.status === 'failed' ? (
+                  <div className="glass-card rounded-3xl p-16 text-center border border-white/5 flex flex-col items-center justify-center">
+                    <div className="p-5 bg-rose-500/10 rounded-full text-rose-500 mb-6 border border-rose-500/20">
+                      <AlertOctagon className="h-12 w-12" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white">Clause Analysis Unavailable</h3>
+                    <p className="text-sm text-slate-400 max-w-md mt-3 font-semibold">
+                      Document audit failed. We couldn't extract or analyze any specific covenants.
+                    </p>
+                  </div>
+                ) : doc.status !== 'complete' ? (
                   /* Analysis Placeholder */
                   <div className="glass-card rounded-3xl p-16 text-center border border-white/5 flex flex-col items-center justify-center">
                     <div className="p-5 bg-slate-900/60 rounded-full text-indigo-400 mb-6 border border-slate-800/80 animate-pulse">
@@ -632,6 +716,17 @@ const DocumentDetail = () => {
                     <h3 className="text-xl font-bold text-white">Analysis in progress</h3>
                     <p className="text-sm text-slate-400 max-w-md mt-3">
                       Our AI is currently auditing document covenants. Risks, breakdowns, and suggestions will be populated here shortly.
+                    </p>
+                  </div>
+                ) : !doc.clauses || doc.clauses.length === 0 ? (
+                  /* No clauses state */
+                  <div className="glass-card rounded-3xl p-16 text-center border border-white/5 flex flex-col items-center justify-center">
+                    <div className="p-5 bg-slate-900/60 rounded-full text-indigo-400 mb-6 border border-slate-800/80">
+                      <Info className="h-12 w-12" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white">No Clauses Detected</h3>
+                    <p className="text-sm text-slate-400 max-w-md mt-3 font-semibold">
+                      Our AI completed the audit but did not detect any standard legal clauses. This can happen if the PDF is scanned (image-only) or contains no readable text.
                     </p>
                   </div>
                 ) : (
@@ -805,15 +900,15 @@ const DocumentDetail = () => {
                   >
                     <input
                       type="text"
-                      disabled={sendingMessage}
+                      disabled={sendingMessage || doc.status === 'failed'}
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
-                      placeholder="Type your question about this document..."
+                      placeholder={doc.status === 'failed' ? "Chat is unavailable because analysis failed." : "Type your question about this document..."}
                       className="flex-1 px-4 py-3 bg-[#030712]/60 border border-white/5 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500/50 text-xs text-white placeholder-slate-650 transition disabled:opacity-50"
                     />
                     <button
                       type="submit"
-                      disabled={!inputMessage.trim() || sendingMessage}
+                      disabled={!inputMessage.trim() || sendingMessage || doc.status === 'failed'}
                       className="p-3 bg-gradient-to-r from-indigo-600 to-violet-650 hover:from-indigo-655 hover:to-violet-655 disabled:opacity-45 text-white rounded-xl transition flex items-center justify-center shadow-lg cursor-pointer"
                     >
                       <Send className="h-4 w-4" />

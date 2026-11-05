@@ -30,24 +30,61 @@ const Login = () => {
     }
   };
 
-  // Render Google Login Button
+  // Render Google Login Button with auto-retry if script is loading
   useEffect(() => {
-    /* global google */
-    if (typeof google !== 'undefined') {
-      try {
-        const client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID || '490767462902-rnpmt3r27bo20un613m3m1tnovcdgmai.apps.googleusercontent.com';
-        google.accounts.id.initialize({
-          client_id: client_id,
-          callback: handleGoogleCredentialResponse,
-        });
-        google.accounts.id.renderButton(
-          document.getElementById('googleBtn'),
-          { theme: 'outline', size: 'large', width: 320 }
-        );
-      } catch (err) {
-        console.warn('Google Identity initialization deferred:', err);
+    let intervalId = null;
+
+    const renderGoogleBtn = () => {
+      const container = document.getElementById('googleBtn');
+      if (!container) return false;
+
+      if (window.google?.accounts?.id) {
+        try {
+          const client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID || '490767462902-rnpmt3r27bo20un613m3m1tnovcdgmai.apps.googleusercontent.com';
+          window.google.accounts.id.initialize({
+            client_id: client_id,
+            callback: handleGoogleCredentialResponse,
+          });
+          container.innerHTML = '';
+          window.google.accounts.id.renderButton(
+            container,
+            { theme: 'outline', size: 'large', width: 320 }
+          );
+          return true;
+        } catch (err) {
+          console.warn('Google Identity initialization error:', err);
+        }
       }
+      return false;
+    };
+
+    // Ensure the Google script is loaded
+    const existingScript = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = renderGoogleBtn;
+      document.head.appendChild(script);
+    } else {
+      existingScript.addEventListener('load', renderGoogleBtn);
     }
+
+    // Try immediately; if not yet ready, poll every 100ms
+    if (!renderGoogleBtn()) {
+      const startTime = Date.now();
+      intervalId = setInterval(() => {
+        if (renderGoogleBtn() || Date.now() - startTime > 10000) {
+          clearInterval(intervalId);
+        }
+      }, 100);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      if (existingScript) existingScript.removeEventListener('load', renderGoogleBtn);
+    };
   }, []);
 
   const handleSubmit = async (e) => {
@@ -310,17 +347,8 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="mt-6 flex flex-col items-center gap-3">
-              <div id="googleBtn" className="flex justify-center w-full"></div>
-              
-              {/* Developer sandbox mock button */}
-              <button
-                type="button"
-                onClick={() => handleGoogleCredentialResponse({ credential: 'mock_google_token' })}
-                className="w-full py-2.5 px-4 border border-dashed border-slate-700/60 rounded-xl text-xs font-semibold text-slate-400 bg-slate-900/40 hover:bg-slate-800 hover:text-slate-200 transition cursor-pointer"
-              >
-                Developer Sandbox Sign-In (Mock)
-              </button>
+            <div className="mt-6 flex flex-col items-center">
+              <div id="googleBtn" className="flex justify-center w-full min-h-[44px]"></div>
             </div>
 
             <div className="mt-6 text-center">
