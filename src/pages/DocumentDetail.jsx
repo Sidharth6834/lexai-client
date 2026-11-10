@@ -223,8 +223,15 @@ const DocumentDetail = () => {
         config
       );
 
-      const replyMessage = { role: 'assistant', content: response.data.reply };
-      setChatMessages((prev) => [...prev, replyMessage]);
+      // Server returns { response: "...", chatHistory: [...] }
+      // Use the full chatHistory from server to stay perfectly in sync with DB
+      if (response.data.chatHistory && response.data.chatHistory.length > 0) {
+        setChatMessages(response.data.chatHistory);
+      } else {
+        // Fallback: append just the reply text
+        const replyText = response.data.response || response.data.reply || 'No response received.';
+        setChatMessages((prev) => [...prev, { role: 'assistant', content: replyText }]);
+      }
 
       // Scroll after assistant reply is added
       requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -234,10 +241,11 @@ const DocumentDetail = () => {
       }));
     } catch (err) {
       console.error('Failed to send message:', err);
-      toast.error(err.response?.data?.message || 'Failed to get answer');
+      const errMsg = err.response?.data?.message || 'Failed to get answer';
+      toast.error(errMsg);
       setChatMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Apologies, I encountered an issue querying this document. Please try again.' }
+        { role: 'assistant', content: `⚠ ${errMsg}. Please try again.` }
       ]);
     } finally {
       setSendingMessage(false);
