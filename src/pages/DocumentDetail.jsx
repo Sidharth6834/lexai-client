@@ -124,12 +124,16 @@ const DocumentDetail = () => {
     };
   }, [doc?.status, id, token]);
 
-  // 3. Scroll to bottom of chat
+  // 3. Scroll to bottom of chat — use requestAnimationFrame to ensure DOM has painted
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [chatMessages, activeTab]);
+    const scrollToBottom = () => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }
+    };
+    // Double-RAF ensures the browser has completed layout and paint before scrolling
+    requestAnimationFrame(() => requestAnimationFrame(scrollToBottom));
+  }, [chatMessages, activeTab, sendingMessage]);
 
   // Handle retrying failed analysis
   const handleRetryAnalysis = async () => {
@@ -164,16 +168,18 @@ const DocumentDetail = () => {
 
       const response = await axios.get(`/api/documents/${id}/report`, config);
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
       
       const contentDisposition = response.headers['content-disposition'];
-      let filename = `${doc.name || 'document'}_audit_report.txt`;
+      let filename = `${doc.name || 'document'}_audit_report.pdf`;
       if (contentDisposition) {
         const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
         if (filenameMatch && filenameMatch[1]) {
           filename = filenameMatch[1];
+          // Ensure .pdf extension even if server sends without it
+          if (!filename.endsWith('.pdf')) filename = filename.replace(/\.[^.]+$/, '') + '.pdf';
         }
       }
 
@@ -199,6 +205,13 @@ const DocumentDetail = () => {
     if (!customMessage) setInputMessage('');
     setSendingMessage(true);
 
+    // Immediately scroll to bottom after adding user message
+    requestAnimationFrame(() => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }
+    });
+
     try {
       const config = {
         headers: { Authorization: `Bearer ${token}` }
@@ -212,6 +225,13 @@ const DocumentDetail = () => {
 
       const replyMessage = { role: 'assistant', content: response.data.reply };
       setChatMessages((prev) => [...prev, replyMessage]);
+
+      // Scroll after assistant reply is added
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+      }));
     } catch (err) {
       console.error('Failed to send message:', err);
       toast.error(err.response?.data?.message || 'Failed to get answer');
