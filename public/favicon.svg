@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Architectural Dark Obsidian Base -->
+  <rect width="64" height="64" rx="14" fill="#0A0B0D" />
+  <rect x="1" y="1" width="62" height="62" rx="13" stroke="#26282E" stroke-width="2" />
+  <rect x="2" y="2" width="60" height="60" rx="12" stroke="#D97706" stroke-opacity="0.3" stroke-width="1" />
+
+  <!-- Scales of Justice: High-Craft Modern Chambers Seal -->
+  <!-- Top Finial / Pivot Jewel -->
+  <circle cx="32" cy="14" r="2.5" fill="#F59E0B" />
+
+  <!-- Central Column / Beam -->
+  <line x1="32" y1="16" x2="32" y2="48" stroke="#D97706" stroke-width="3" stroke-linecap="round" />
+  
+  <!-- Main Balance Crossbeam -->
+  <line x1="14" y1="23" x2="50" y2="23" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" />
+  <circle cx="32" cy="23" r="2" fill="#0A0B0D" stroke="#F59E0B" stroke-width="2" />
+
+  <!-- Left Suspension Strings -->
+  <line x1="15" y1="24" x2="21" y2="37" stroke="#D97706" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.85" />
+  <line x1="27" y1="24" x2="21" y2="37" stroke="#D97706" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.85" />
+  <!-- Left Scale Pan -->
+  <path d="M12 37 C12 43, 30 43, 30 37 Z" fill="#F59E0B" fill-opacity="0.25" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
+
+  <!-- Right Suspension Strings -->
+  <line x1="37" y1="24" x2="43" y2="37" stroke="#D97706" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.85" />
+  <line x1="49" y1="24" x2="43" y2="37" stroke="#D97706" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.85" />
+  <!-- Right Scale Pan -->
+  <path d="M34 37 C34 43, 52 43, 52 37 Z" fill="#F59E0B" fill-opacity="0.25" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
+
+  <!-- Column Pedestal / Base -->
+  <path d="M22 51 L42 51" stroke="#F59E0B" stroke-width="3.5" stroke-linecap="round" />
+  <path d="M25 47 L39 47" stroke="#D97706" stroke-width="2.5" stroke-linecap="round" />
+</svg>
