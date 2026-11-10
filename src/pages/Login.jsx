@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Mail, Lock, Eye, EyeOff, Scale, Sparkles, Shield, ArrowRight, MessageSquare, CheckCircle, FileText } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Scale, Sparkles, Shield, MessageSquare, CheckCircle, FileText } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
@@ -96,7 +96,7 @@ const Login = () => {
     }
 
     setLoading(true);
-    const toastId = toast.loading('Logging in...');
+    const toastId = toast.loading('Signing in...');
 
     try {
       const response = await axios.post('/api/auth/login', {
@@ -118,114 +118,106 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#030712] text-white flex relative overflow-hidden">
-      {/* Background glowing bubbles */}
-      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-[#0A0B0D] text-[#F4F3EF] flex relative overflow-hidden">
+      {/* Subtle architectural hairline dividers */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#20222715_1px,transparent_1px),linear-gradient(to_bottom,#20222715_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
 
-      {/* LEFT SIDE: Landing & Marketing Section */}
-      <div className="hidden lg:flex lg:w-1/2 bg-slate-955/20 border-r border-white/5 flex-col justify-between p-12 relative overflow-hidden z-10">
-        {/* Glow behind landing */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.06),transparent_60%)] pointer-events-none" />
+      {/* LEFT SIDE: Chambers Editorial Presentation */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#0E0F12] border-r border-[#202227] flex-col justify-between p-12 lg:p-14 relative z-10">
         
         {/* Branding Logo Header */}
-        <div className="flex items-center space-x-2.5 text-indigo-400">
-          <Scale className="h-9 w-9" />
-          <span className="text-2xl font-extrabold text-white tracking-wider">LegalMind</span>
+        <div className="flex items-center space-x-3">
+          <div className="w-9 h-9 rounded-lg bg-[#181A1F] border border-[#2A2C34] flex items-center justify-center text-[#D97706]">
+            <Scale className="h-5 w-5" />
+          </div>
+          <div>
+            <span className="font-serif text-2xl font-bold text-[#F4F3EF] tracking-tight">LegalMind</span>
+            <span className="block text-[10px] font-mono uppercase tracking-widest text-[#8E8D88]">Chambers Document Intelligence</span>
+          </div>
         </div>
 
         {/* Feature Presentation */}
-        <div className="space-y-10 max-w-xl mx-auto my-auto relative z-10">
+        <div className="space-y-8 max-w-lg my-auto relative z-10">
           <div className="space-y-4">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-bold text-indigo-400">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-[#181A1F] border border-[#2A2C34] text-xs font-mono font-medium text-[#D97706]">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Next-Gen Legal Assistant</span>
+              <span>Institutional Legal AI</span>
             </div>
-            <h1 className="text-4xl font-extrabold leading-tight text-white xl:text-5xl tracking-tight">
+            <h1 className="text-4xl font-serif font-bold leading-tight text-[#F4F3EF] xl:text-5xl tracking-tight">
               Audit Legal Contracts <br />
-              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">with AI in Seconds.</span>
+              <span className="text-[#D97706]">with AI in Seconds.</span>
             </h1>
-            <p className="text-slate-400 text-sm font-medium leading-relaxed">
+            <p className="text-[#8E8D88] text-sm leading-relaxed">
               LegalMind uses advanced retrieval-augmented LLM technology to analyze covenants, translate complex legalese, flag risks, and answer specific questions in real-time.
             </p>
           </div>
 
-          {/* Core Highlights List */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+          {/* Core Highlights List - Swiss Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-2">
             
-            <div className="flex space-x-3.5">
-              <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20 h-fit">
-                <CheckCircle className="h-4.5 w-4.5" />
+            <div className="p-3.5 rounded-lg bg-[#131518] border border-[#202227] space-y-1.5">
+              <div className="flex items-center space-x-2 text-[#D97706]">
+                <CheckCircle className="h-4 w-4" />
+                <h4 className="text-xs font-semibold text-[#F4F3EF] tracking-wide">Clause Breakdown</h4>
               </div>
-              <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">Clause Breakdown</h4>
-                <p className="text-[11px] text-slate-500 font-semibold mt-1">
-                  Categorized risk alerts with suggestions for caution or risky areas.
-                </p>
-              </div>
+              <p className="text-[11px] text-[#8E8D88] leading-relaxed">
+                Categorized risk alerts with suggestions for caution or risky areas.
+              </p>
             </div>
 
-            <div className="flex space-x-3.5">
-              <div className="p-2 bg-purple-500/10 rounded-xl text-purple-400 border border-purple-500/20 h-fit">
-                <MessageSquare className="h-4.5 w-4.5" />
+            <div className="p-3.5 rounded-lg bg-[#131518] border border-[#202227] space-y-1.5">
+              <div className="flex items-center space-x-2 text-[#D97706]">
+                <MessageSquare className="h-4 w-4" />
+                <h4 className="text-xs font-semibold text-[#F4F3EF] tracking-wide">Interactive Chat</h4>
               </div>
-              <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">Interactive Chat</h4>
-                <p className="text-[11px] text-slate-500 font-semibold mt-1">
-                  Ask questions, check liabilities, and query specific sections.
-                </p>
-              </div>
+              <p className="text-[11px] text-[#8E8D88] leading-relaxed">
+                Ask questions, check liabilities, and query specific sections.
+              </p>
             </div>
 
-            <div className="flex space-x-3.5">
-              <div className="p-2 bg-pink-500/10 rounded-xl text-pink-450 border border-pink-500/20 h-fit">
-                <Sparkles className="h-4.5 w-4.5" />
+            <div className="p-3.5 rounded-lg bg-[#131518] border border-[#202227] space-y-1.5">
+              <div className="flex items-center space-x-2 text-[#D97706]">
+                <Sparkles className="h-4 w-4" />
+                <h4 className="text-xs font-semibold text-[#F4F3EF] tracking-wide">Plain-English Explain</h4>
               </div>
-              <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">Plain-English Explain</h4>
-                <p className="text-[11px] text-slate-500 font-semibold mt-1">
-                  Translates complex contract clauses into simple, clear summaries.
-                </p>
-              </div>
+              <p className="text-[11px] text-[#8E8D88] leading-relaxed">
+                Translates complex contract clauses into simple, clear summaries.
+              </p>
             </div>
 
-            <div className="flex space-x-3.5">
-              <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-450 border border-emerald-500/20 h-fit">
-                <Shield className="h-4.5 w-4.5" />
+            <div className="p-3.5 rounded-lg bg-[#131518] border border-[#202227] space-y-1.5">
+              <div className="flex items-center space-x-2 text-[#D97706]">
+                <Shield className="h-4 w-4" />
+                <h4 className="text-xs font-semibold text-[#F4F3EF] tracking-wide">Confidential Audits</h4>
               </div>
-              <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">Confidential Audits</h4>
-                <p className="text-[11px] text-slate-500 font-semibold mt-1">
-                  Secure local document analysis and private cloud reports.
-                </p>
-              </div>
+              <p className="text-[11px] text-[#8E8D88] leading-relaxed">
+                Secure local document analysis and private cloud reports.
+              </p>
             </div>
 
           </div>
 
           {/* Interactive visual mockup container */}
-          <div className="pt-6 relative">
-            <div className="absolute inset-0 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
-            <div className="glass-card rounded-2xl p-5 border border-white/10 text-left relative shadow-xl max-w-md w-full mx-auto transform -rotate-1 hover:rotate-0 transition duration-300">
-              <div className="flex items-center justify-between mb-4">
+          <div className="pt-2">
+            <div className="p-4 rounded-xl bg-[#131518] border border-[#202227] text-left shadow-lg">
+              <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-[#202227]">
                 <div className="flex items-center space-x-2">
-                  <FileText className="h-5 w-5 text-indigo-400" />
-                  <span className="text-xs font-bold text-slate-300 truncate max-w-[180px]">Mutual_NDA_Draft.pdf</span>
+                  <FileText className="h-4 w-4 text-[#D97706]" />
+                  <span className="text-xs font-mono font-medium text-[#F4F3EF] truncate">Mutual_NDA_Draft.pdf</span>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.1)]">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#D97706]/10 text-[#D97706] border border-[#D97706]/30">
                   CAUTION
                 </span>
               </div>
               
-              <div className="space-y-3">
-                <div className="p-3 bg-slate-950/50 rounded-xl border border-white/5 space-y-1">
-                  <p className="text-[9px] font-extrabold text-slate-500 tracking-wider uppercase">Covenant Audited</p>
-                  <p className="text-xs font-bold text-white">Section 9: Governing Law & Jurisdiction</p>
+              <div className="space-y-2.5">
+                <div className="p-2.5 bg-[#0A0B0D] rounded border border-[#202227]">
+                  <p className="text-[10px] font-mono uppercase text-[#8E8D88]">Covenant Audited</p>
+                  <p className="text-xs font-semibold text-[#F4F3EF]">Section 9: Governing Law & Jurisdiction</p>
                 </div>
-                
-                <div className="p-3.5 bg-indigo-500/5 rounded-xl border border-indigo-500/10 space-y-1.5">
-                  <p className="text-[9px] font-extrabold text-indigo-400 tracking-wider uppercase">AI Suggestion</p>
-                  <p className="text-[11px] font-semibold text-indigo-200 leading-relaxed">
+                <div className="p-2.5 bg-[#181A1F] rounded border border-[#2A2C34]">
+                  <p className="text-[10px] font-mono uppercase text-[#D97706]">AI Recommendation</p>
+                  <p className="text-[11px] text-[#C6C5BF] leading-relaxed">
                     "Change jurisdiction from New York to Delaware to match company standard bylaws."
                   </p>
                 </div>
@@ -235,48 +227,50 @@ const Login = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-slate-500 text-xs font-semibold">
-          © {new Date().getFullYear()} LegalMind Inc. All rights reserved.
+        <div className="text-[#575652] text-xs font-mono">
+          © {new Date().getFullYear()} LegalMind Chambers Inc. All rights reserved.
         </div>
       </div>
 
-      {/* RIGHT SIDE: Interactive Login Panel */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+      {/* RIGHT SIDE: Precision Login Panel */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center py-12 px-5 sm:px-8 lg:px-12 relative z-10">
         
         {/* Mobile-only brand logo */}
-        <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 lg:hidden mb-6">
-          <div className="flex justify-center items-center space-x-2.5 text-indigo-400">
-            <Scale className="h-9 w-9 animate-pulse" />
-            <span className="text-3xl font-extrabold text-white tracking-wider">LegalMind</span>
+        <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 lg:hidden mb-8 text-center">
+          <div className="inline-flex items-center space-x-2.5 text-[#D97706] mb-3">
+            <div className="w-9 h-9 rounded-lg bg-[#181A1F] border border-[#2A2C34] flex items-center justify-center">
+              <Scale className="h-5 w-5" />
+            </div>
+            <span className="font-serif text-2xl font-bold text-[#F4F3EF] tracking-tight">LegalMind</span>
           </div>
-          <h2 className="mt-4 text-center text-2xl font-extrabold text-white tracking-tight">
+          <h2 className="text-2xl font-serif font-bold text-[#F4F3EF] tracking-tight">
             Welcome to LegalMind
           </h2>
-          <p className="mt-1 text-center text-xs text-slate-400 font-medium">
+          <p className="mt-1 text-xs text-[#8E8D88]">
             Analyze and manage your legal documents securely
           </p>
         </div>
 
         {/* Desktop-only simple form heading */}
-        <div className="hidden lg:block sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center mb-6">
-          <h2 className="text-3xl font-extrabold text-white tracking-tight">
-            Welcome back
+        <div className="hidden lg:block sm:mx-auto sm:w-full sm:max-w-md relative z-10 mb-6">
+          <h2 className="text-3xl font-serif font-bold text-[#F4F3EF] tracking-tight">
+            Sign in to LegalMind
           </h2>
-          <p className="mt-2 text-sm text-slate-450 font-semibold">
-            Sign in to access your secure legal dashboard
+          <p className="mt-1.5 text-xs text-[#8E8D88]">
+            Access your secure legal audit workspace and document vault
           </p>
         </div>
 
         <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-          <div className="glass-card py-8 px-6 shadow-2xl rounded-3xl sm:px-10 border border-white/5">
-            <form className="space-y-6" onSubmit={handleSubmit}>
+          <div className="p-7 sm:p-8 rounded-xl bg-[#131518] border border-[#202227] shadow-xl">
+            <form className="space-y-5" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                <label htmlFor="email" className="block text-[11px] font-mono font-medium text-[#8E8D88] uppercase tracking-wider">
                   Email Address
                 </label>
-                <div className="mt-2 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                    <Mail className="h-4.5 w-4.5" />
+                <div className="mt-2 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#575652]">
+                    <Mail className="h-4 w-4" />
                   </div>
                   <input
                     id="email"
@@ -285,26 +279,26 @@ const Login = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-11 pr-4 py-3 glass-input rounded-xl text-sm placeholder-slate-650 transition"
-                    placeholder="john@example.com"
+                    className="block w-full pl-10 pr-3.5 py-2.5 bg-[#0A0B0D] border border-[#202227] rounded-lg text-xs text-[#F4F3EF] placeholder-[#575652] focus:outline-none focus:border-[#D97706] focus:ring-1 focus:ring-[#D97706]/30 transition"
+                    placeholder="name@firm.com"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  <label htmlFor="password" className="block text-[11px] font-mono font-medium text-[#8E8D88] uppercase tracking-wider">
                     Password
                   </label>
                   <div className="text-xs">
-                    <Link to="/forgot-password" className="font-semibold text-indigo-400 hover:text-indigo-300 transition">
+                    <Link to="/forgot-password" className="text-xs font-medium text-[#D97706] hover:text-[#F59E0B] transition">
                       Forgot Password?
                     </Link>
                   </div>
                 </div>
-                <div className="mt-2 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                    <Lock className="h-4.5 w-4.5" />
+                <div className="mt-2 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#575652]">
+                    <Lock className="h-4 w-4" />
                   </div>
                   <input
                     id="password"
@@ -313,15 +307,15 @@ const Login = () => {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-11 pr-10 py-3 glass-input rounded-xl text-sm placeholder-slate-650 transition"
+                    className="block w-full pl-10 pr-10 py-2.5 bg-[#0A0B0D] border border-[#202227] rounded-lg text-xs text-[#F4F3EF] placeholder-[#575652] focus:outline-none focus:border-[#D97706] focus:ring-1 focus:ring-[#D97706]/30 transition font-mono"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 transition"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#575652] hover:text-[#8E8D88] transition"
                   >
-                    {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
@@ -330,7 +324,7 @@ const Login = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl text-sm font-bold text-white btn-gradient disabled:opacity-50 cursor-pointer"
+                  className="w-full flex justify-center py-2.5 px-4 rounded-lg text-xs font-semibold text-white bg-[#D97706] hover:bg-[#B45309] border border-amber-400/20 shadow-sm transition disabled:opacity-50 cursor-pointer"
                 >
                   {loading ? 'Signing in...' : 'Sign In'}
                 </button>
@@ -338,24 +332,24 @@ const Login = () => {
             </form>
 
             {/* Social login divider */}
-            <div className="mt-6 relative">
+            <div className="mt-5 relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-800"></div>
+                <div className="w-full border-t border-[#202227]"></div>
               </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-3 bg-[#0d1425] text-slate-500 rounded-md font-semibold">Or continue with</span>
+              <div className="relative flex justify-center text-[11px]">
+                <span className="px-3 bg-[#131518] text-[#8E8D88] font-mono">Or continue with</span>
               </div>
             </div>
 
-            <div className="mt-6 flex flex-col items-center">
+            <div className="mt-5 flex flex-col items-center">
               <div id="googleBtn" className="flex justify-center w-full min-h-[44px]"></div>
             </div>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-slate-400 font-semibold">
+            <div className="mt-6 pt-5 border-t border-[#202227] text-center">
+              <p className="text-xs text-[#8E8D88]">
                 Don't have an account?{' '}
-                <Link to="/register" className="font-semibold text-indigo-400 hover:text-indigo-300 transition">
-                  Register
+                <Link to="/register" className="font-semibold text-[#D97706] hover:text-[#F59E0B] transition">
+                  Create account
                 </Link>
               </p>
             </div>

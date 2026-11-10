@@ -4,30 +4,34 @@
 
 @layer base {
   body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: #030712;
-    color: #f1f5f9;
+    font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif;
+    background-color: #0A0B0D;
+    color: #F4F3EF;
+    letter-spacing: -0.011em;
+  }
+  h1, h2, h3, .font-serif-chambers {
+    font-family: 'Newsreader', Georgia, serif;
   }
   input, select, textarea, button {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
   }
 }
 
 @layer utilities {
-  /* Custom sleek scrollbar styles for modern dashboards */
+  /* Architectural Sleek Scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
   ::-webkit-scrollbar-track {
-    background: #030712;
+    background: #0A0B0D;
   }
   ::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 9999px;
+    background: #202227;
+    border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #4f46e5;
+    background: #D97706;
   }
 
   /* Hide scrollbar utility */
@@ -39,51 +43,72 @@
     scrollbar-width: none;
   }
 
-  /* Glassmorphism system card defaults */
-  .glass-card {
-    background: rgba(15, 23, 42, 0.45);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Chambers-Swiss Solid Card (Replaces generic AI glass) */
+  .chambers-card, .glass-card {
+    background: #131518;
+    border: 1px solid #202227;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
-  .glass-input {
-    background: rgba(3, 7, 18, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    color: #f8fafc;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  .chambers-card-elevated {
+    background: #17191E;
+    border: 1px solid #262830;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
   }
-  .glass-input:focus {
+
+  /* Precision Inputs */
+  .chambers-input, .glass-input {
+    background: #0A0B0D;
+    border: 1px solid #202227;
+    color: #F4F3EF;
+    transition: all 0.15s ease;
+  }
+  .chambers-input:focus, .glass-input:focus {
     outline: none;
-    border-color: rgba(99, 102, 241, 0.5);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+    border-color: #D97706;
+    box-shadow: 0 0 0 1px rgba(217, 119, 6, 0.25);
   }
 
-  /* Interactive button animations */
-  .btn-gradient {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .btn-gradient:hover:not(:disabled) {
-    transform: translateY(-1.5px);
-    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.35);
-    background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
-  }
-  .btn-gradient:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
-  /* Secondary glass border button */
-  .btn-glass {
-    background: rgba(15, 23, 42, 0.4);
+  /* Modern Chambers & Swiss Minimalist Primary Action */
+  .btn-chambers-primary, .btn-gradient {
+    background: #D97706;
+    color: #FFFFFF;
+    font-weight: 600;
+    letter-spacing: -0.01em;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transition: all 0.15s ease;
   }
-  .btn-glass:hover {
-    background: rgba(30, 41, 59, 0.5);
+  .btn-chambers-primary:hover:not(:disabled), .btn-gradient:hover:not(:disabled) {
+    background: #B45309;
     border-color: rgba(255, 255, 255, 0.2);
-    color: #f8fafc;
+  }
+  .btn-chambers-primary:active:not(:disabled), .btn-gradient:active:not(:disabled) {
+    transform: translateY(0.5px);
+  }
+
+  /* Swiss Minimalist Inverted Primary */
+  .btn-swiss-inverted {
+    background: #F4F3EF;
+    color: #0A0B0D;
+    font-weight: 600;
+    border: 1px solid #F4F3EF;
+    transition: all 0.15s ease;
+  }
+  .btn-swiss-inverted:hover:not(:disabled) {
+    background: #FFFFFF;
+  }
+
+  /* Subtle Secondary Button */
+  .btn-chambers-secondary, .btn-glass {
+    background: #131518;
+    border: 1px solid #202227;
+    color: #C6C5BF;
+    transition: all 0.15s ease;
+  }
+  .btn-chambers-secondary:hover, .btn-glass:hover {
+    background: #1A1C22;
+    border-color: #2F323A;
+    color: #F4F3EF;
   }
 }

@@ -33,7 +33,6 @@ const Upload = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  // Helper to get initials
   const getInitials = (name) => {
     if (!name) return 'U';
     return name
@@ -48,13 +47,11 @@ const Upload = () => {
   const processFile = (selectedFile) => {
     if (!selectedFile) return;
 
-    // Validate type (must be PDF)
     if (selectedFile.type !== 'application/pdf' && !selectedFile.name.endsWith('.pdf')) {
       toast.error('Only PDF documents are allowed.');
       return;
     }
 
-    // Validate size (max 10MB)
     const maxBytes = 10 * 1024 * 1024; // 10MB
     if (selectedFile.size > maxBytes) {
       toast.error('File size exceeds the 10MB limit.');
@@ -62,8 +59,6 @@ const Upload = () => {
     }
 
     setFile(selectedFile);
-    
-    // Auto-fill document name (strip extension)
     const baseName = selectedFile.name.replace(/\.[^/.]+$/, '');
     setName(baseName);
   };
@@ -74,7 +69,6 @@ const Upload = () => {
     }
   };
 
-  // Drag and drop events handlers
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -89,14 +83,12 @@ const Upload = () => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragActive(false);
-
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       processFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleRemoveFile = (e) => {
-    e.preventDefault();
     e.stopPropagation();
     setFile(null);
     setName('');
@@ -111,12 +103,16 @@ const Upload = () => {
     }
   };
 
-  // Submit Handler
   const handleUploadSubmit = async (e) => {
     e.preventDefault();
 
-    if (!file || !name) {
-      toast.error('Please select a PDF file and specify a document name.');
+    if (!file) {
+      toast.error('Please select a PDF file');
+      return;
+    }
+
+    if (!name.trim()) {
+      toast.error('Please provide a document name');
       return;
     }
 
@@ -127,27 +123,23 @@ const Upload = () => {
     formData.append('file', file);
     formData.append('name', name);
     formData.append('type', type);
-    formData.append('description', description);
-    if (expiryDate) {
-      formData.append('expiryDate', expiryDate);
-    }
+    if (description) formData.append('description', description);
+    if (expiryDate) formData.append('expiryDate', expiryDate);
 
     try {
-      const response = await axios.post('/api/documents/upload', formData, {
+      const config = {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
         },
         onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setUploadProgress(percentCompleted);
         }
-      });
+      };
 
-      toast.success('Document uploaded! Analysis starting...');
-      // Redirect to the document analysis page
+      const response = await axios.post('/api/documents', formData, config);
+      toast.success('Document uploaded successfully!');
       navigate(`/document/${response.data._id}`);
     } catch (err) {
       const errorMsg = err.response?.data?.message || 'Upload failed. Please try again.';
@@ -157,58 +149,54 @@ const Upload = () => {
   };
 
   return (
-    <div className="h-screen bg-[#030712] text-white flex flex-col md:flex-row relative overflow-hidden">
-      {/* Background glowing shapes */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
-
+    <div className="h-screen bg-[#0A0B0D] text-[#F4F3EF] flex flex-col md:flex-row relative overflow-hidden font-sans">
       <Sidebar activePage="upload" isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
       {/* Mobile Header Bar */}
-      <div className="h-16 bg-slate-950/75 backdrop-blur-xl border-b border-slate-900 flex items-center justify-between px-4 sm:px-6 md:hidden sticky top-0 z-20 w-full shrink-0">
+      <div className="h-16 bg-[#0E0F12] border-b border-[#202227] flex items-center justify-between px-4 sm:px-6 md:hidden sticky top-0 z-20 w-full shrink-0">
         <button 
           onClick={() => setIsSidebarOpen(true)}
-          className="p-2 text-slate-400 hover:text-white hover:bg-slate-900 rounded-xl transition"
+          className="p-2 text-[#8E8D88] hover:text-white hover:bg-[#181A1F] rounded-lg transition"
         >
-          <Menu className="h-6 w-6" />
+          <Menu className="h-5 w-5" />
         </button>
-        <div className="flex items-center space-x-2 text-indigo-400">
-          <Scale className="h-6 w-6" />
-          <span className="text-lg font-bold text-white tracking-wide">LegalMind</span>
+        <div className="flex items-center space-x-2 text-[#D97706]">
+          <Scale className="h-5 w-5" />
+          <span className="font-serif text-lg font-bold text-[#F4F3EF] tracking-tight">LegalMind</span>
         </div>
-        <div className="h-8 w-8 rounded-full bg-indigo-650 flex items-center justify-center text-white font-bold text-xs shadow-md">
+        <div className="h-8 w-8 rounded-lg bg-[#181A1F] border border-[#2A2C34] flex items-center justify-center text-[#D97706] font-mono text-xs font-semibold">
           {getInitials(user?.name)}
         </div>
       </div>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 min-w-0 h-screen p-6 sm:p-8 lg:p-12 overflow-y-auto z-10">
-        <div className="max-w-3xl mx-auto">
+      <main className="flex-1 min-w-0 h-screen p-5 sm:p-7 lg:p-10 overflow-y-auto z-10">
+        <div className="max-w-3xl mx-auto space-y-6">
           {/* TOP NAVBAR */}
-          <header className="flex items-center space-x-4 mb-8">
+          <header className="flex items-center space-x-3.5 pb-4 border-b border-[#202227]">
             <Link 
               to="/dashboard" 
-              className="p-2 bg-slate-900/40 rounded-xl hover:bg-slate-800/60 text-slate-400 hover:text-white transition border border-slate-800/50 hover:border-slate-700/50 shadow-md backdrop-blur-md"
+              className="p-2 bg-[#131518] rounded-lg hover:bg-[#181A1F] text-[#8E8D88] hover:text-[#F4F3EF] transition border border-[#202227] shadow-sm"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4" />
             </Link>
             <div>
-              <h1 className="text-2xl font-extrabold text-white sm:text-3xl tracking-tight">Upload Document</h1>
-              <p className="text-slate-400 text-sm mt-0.5 font-medium">Prepare a PDF legal document for AI review</p>
+              <span className="text-[10px] uppercase tracking-widest font-mono text-[#D97706] font-semibold">Document Intake</span>
+              <h1 className="text-2xl font-serif font-bold text-[#F4F3EF] sm:text-3xl tracking-tight mt-0.5">
+                Upload Contract for Audit
+              </h1>
+              <p className="text-xs text-[#8E8D88]">Deploy automated legal covenant extraction and risk profiling</p>
             </div>
           </header>
 
-          {/* MAIN FORM CONTAINER */}
-          <div className="glass-card rounded-3xl p-6 sm:p-10 border border-slate-800/80 shadow-2xl relative overflow-hidden">
-            {/* Ambient subtle card glow */}
-            <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-            
-            <form onSubmit={handleUploadSubmit} className="space-y-8 relative z-10">
+          {/* MAIN FORM CONTAINER - Chambers & Swiss Minimalist */}
+          <div className="p-6 sm:p-8 rounded-xl bg-[#131518] border border-[#202227] shadow-xl">
+            <form onSubmit={handleUploadSubmit} className="space-y-6">
               
               {/* UPLOAD ZONE */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                  Legal Document (PDF)
+                <label className="block text-[11px] font-mono font-medium text-[#8E8D88] uppercase tracking-wider mb-2">
+                  Legal Document File (PDF)
                 </label>
 
                 <div 
@@ -217,15 +205,14 @@ const Upload = () => {
                   onDragLeave={handleDrag}
                   onDrop={handleDrop}
                   onClick={handleContainerClick}
-                  className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[220px] ${
+                  className={`border-2 border-dashed rounded-xl p-7 text-center cursor-pointer transition-all duration-150 flex flex-col items-center justify-center min-h-[200px] ${
                     isDragActive 
-                      ? 'border-indigo-500 bg-indigo-500/10 shadow-[0_0_20px_rgba(99,102,241,0.25)] scale-[1.01]' 
+                      ? 'border-[#D97706] bg-[#D97706]/10 scale-[1.01]' 
                       : file 
-                        ? 'border-emerald-500/40 bg-emerald-500/5 cursor-default' 
-                        : 'border-slate-800 bg-slate-950/40 hover:border-indigo-500/40 hover:bg-indigo-500/5 hover:shadow-[0_0_15px_rgba(99,102,241,0.05)]'
+                        ? 'border-[#10B981]/40 bg-[#10B981]/5 cursor-default' 
+                        : 'border-[#262830] bg-[#0A0B0D] hover:border-[#D97706]/40 hover:bg-[#181A1F]/30'
                   }`}
                 >
-                  {/* Hidden File Input */}
                   <input 
                     type="file" 
                     ref={fileInputRef}
@@ -236,34 +223,32 @@ const Upload = () => {
                   />
 
                   {!file ? (
-                    /* DEFAULT STATE */
-                    <div className="space-y-4">
-                      <div className="p-4 bg-slate-900/60 rounded-full text-indigo-400 inline-block border border-slate-800/80 shadow-md">
-                        <UploadCloud className="h-8 w-8 animate-bounce" style={{ animationDuration: '3s' }} />
+                    <div className="space-y-3">
+                      <div className="p-3 bg-[#181A1F] rounded-lg text-[#D97706] inline-block border border-[#2A2C34]">
+                        <UploadCloud className="h-6 w-6" />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-white">Drag & drop your document here</p>
-                        <p className="text-xs text-slate-400 mt-1 font-medium">or click to browse local files</p>
+                        <p className="text-xs font-semibold text-[#F4F3EF]">Drag & drop contract PDF here</p>
+                        <p className="text-[11px] text-[#8E8D88] mt-0.5">or click to browse local filesystem</p>
                       </div>
-                      <div className="inline-block px-3 py-1 rounded-full bg-slate-900/80 border border-slate-800 text-[10px] text-slate-500 font-extrabold tracking-wider uppercase">
+                      <div className="inline-block px-2.5 py-0.5 rounded bg-[#181A1F] border border-[#202227] text-[10px] text-[#8E8D88] font-mono uppercase tracking-wider">
                         PDF files only • Max 10MB
                       </div>
                     </div>
                   ) : (
-                    /* FILE SELECTED STATE */
-                    <div className="flex items-center space-x-4 w-full max-w-md bg-slate-900/60 p-4.5 rounded-2xl border border-emerald-500/20 relative shadow-lg">
-                      <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/20">
-                        <FileText className="h-6 w-6" />
+                    <div className="flex items-center space-x-3.5 w-full max-w-md bg-[#181A1F] p-4 rounded-xl border border-[#10B981]/30 relative shadow-md">
+                      <div className="p-2.5 bg-[#10B981]/10 rounded-lg text-[#10B981] border border-[#10B981]/20">
+                        <FileText className="h-5 w-5" />
                       </div>
                       <div className="flex-1 min-w-0 text-left">
-                        <p className="text-sm font-bold text-white truncate pr-6">{file.name}</p>
-                        <p className="text-xs text-emerald-400 font-semibold mt-0.5">{formatFileSize(file.size)}</p>
+                        <p className="text-xs font-semibold text-[#F4F3EF] truncate pr-6">{file.name}</p>
+                        <p className="text-[11px] text-[#10B981] font-mono mt-0.5">{formatFileSize(file.size)}</p>
                       </div>
                       {!uploading && (
                         <button 
                           type="button" 
                           onClick={handleRemoveFile}
-                          className="absolute right-3.5 top-3.5 p-1.5 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition"
+                          className="absolute right-3 top-3 p-1 rounded text-[#8E8D88] hover:text-[#F4F3EF] hover:bg-[#202227] transition"
                           title="Remove file"
                         >
                           <X className="h-4 w-4" />
@@ -275,12 +260,12 @@ const Upload = () => {
               </div>
 
               {/* FORM INPUTS */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 {/* Document Name */}
                 <div>
-                  <label htmlFor="doc-name" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">
-                    Document Name
+                  <label htmlFor="doc-name" className="block text-[11px] font-mono font-medium text-[#8E8D88] uppercase tracking-wider mb-1.5">
+                    Document Title
                   </label>
                   <input
                     id="doc-name"
@@ -289,15 +274,15 @@ const Upload = () => {
                     disabled={uploading}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="block w-full px-4 py-3.5 glass-input rounded-xl text-sm placeholder-slate-650 transition disabled:opacity-50"
-                    placeholder="e.g. NDA for Project Genesis"
+                    className="block w-full px-3.5 py-2.5 bg-[#0A0B0D] border border-[#202227] rounded-lg text-xs text-[#F4F3EF] placeholder-[#575652] focus:outline-none focus:border-[#D97706] focus:ring-1 focus:ring-[#D97706]/30 transition disabled:opacity-50"
+                    placeholder="e.g. Master Services Agreement v3.2"
                   />
                 </div>
 
                 {/* Document Type Dropdown */}
                 <div>
-                  <label htmlFor="doc-type" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">
-                    Document Type
+                  <label htmlFor="doc-type" className="block text-[11px] font-mono font-medium text-[#8E8D88] uppercase tracking-wider mb-1.5">
+                    Contract Category
                   </label>
                   <div className="relative">
                     <select
@@ -305,17 +290,17 @@ const Upload = () => {
                       disabled={uploading}
                       value={type}
                       onChange={(e) => setType(e.target.value)}
-                      className="block w-full px-4 py-3.5 glass-input rounded-xl text-sm transition disabled:opacity-50 appearance-none cursor-pointer"
+                      className="block w-full px-3.5 py-2.5 bg-[#0A0B0D] border border-[#202227] rounded-lg text-xs font-medium text-[#F4F3EF] focus:outline-none focus:border-[#D97706] transition disabled:opacity-50 appearance-none cursor-pointer"
                     >
-                      <option value="rent_agreement" className="bg-slate-950 text-white">Rent Agreement</option>
-                      <option value="job_offer" className="bg-slate-950 text-white">Job Offer Letter</option>
-                      <option value="loan_agreement" className="bg-slate-950 text-white">Loan Agreement</option>
-                      <option value="sale_deed" className="bg-slate-950 text-white">Sale Deed</option>
-                      <option value="service_agreement" className="bg-slate-950 text-white">Service Agreement</option>
-                      <option value="other" className="bg-slate-950 text-white">Other</option>
+                      <option value="rent_agreement" className="bg-[#0A0B0D] text-[#F4F3EF]">Rent / Lease Agreement</option>
+                      <option value="job_offer" className="bg-[#0A0B0D] text-[#F4F3EF]">Job Offer / Employment</option>
+                      <option value="loan_agreement" className="bg-[#0A0B0D] text-[#F4F3EF]">Loan / Financing Covenant</option>
+                      <option value="sale_deed" className="bg-[#0A0B0D] text-[#F4F3EF]">Sale Deed / Asset Purchase</option>
+                      <option value="service_agreement" className="bg-[#0A0B0D] text-[#F4F3EF]">Master Services Agreement (MSA)</option>
+                      <option value="other" className="bg-[#0A0B0D] text-[#F4F3EF]">Other Legal Document</option>
                     </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-                      <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-[#575652]">
+                      <svg className="fill-current h-3.5 w-3.5" viewBox="0 0 20 20">
                         <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                       </svg>
                     </div>
@@ -326,8 +311,8 @@ const Upload = () => {
 
               {/* Description Textarea */}
               <div>
-                <label htmlFor="doc-desc" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">
-                  Description (Optional)
+                <label htmlFor="doc-desc" className="block text-[11px] font-mono font-medium text-[#8E8D88] uppercase tracking-wider mb-1.5">
+                  Internal Notes & Context (Optional)
                 </label>
                 <textarea
                   id="doc-desc"
@@ -335,15 +320,15 @@ const Upload = () => {
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="block w-full px-4 py-3.5 glass-input rounded-xl text-sm placeholder-slate-650 transition disabled:opacity-50 resize-none"
-                  placeholder="Any notes about this document..."
+                  className="block w-full px-3.5 py-2.5 bg-[#0A0B0D] border border-[#202227] rounded-lg text-xs text-[#F4F3EF] placeholder-[#575652] focus:outline-none focus:border-[#D97706] focus:ring-1 focus:ring-[#D97706]/30 transition disabled:opacity-50 resize-none"
+                  placeholder="Jurisdiction notes, counterparty counsel details, or custom audit questions..."
                 />
               </div>
 
               {/* Expiry Date (Optional) */}
               <div>
-                <label htmlFor="doc-expiry" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">
-                  Agreement Expiry Date (optional)
+                <label htmlFor="doc-expiry" className="block text-[11px] font-mono font-medium text-[#8E8D88] uppercase tracking-wider mb-1.5">
+                  Covenant Renewal / Expiration Date (Optional)
                 </label>
                 <input
                   id="doc-expiry"
@@ -351,24 +336,24 @@ const Upload = () => {
                   disabled={uploading}
                   value={expiryDate}
                   onChange={(e) => setExpiryDate(e.target.value)}
-                  className="block w-full px-4 py-3.5 glass-input rounded-xl text-sm placeholder-slate-650 transition disabled:opacity-50 cursor-pointer"
+                  className="block w-full px-3.5 py-2.5 bg-[#0A0B0D] border border-[#202227] rounded-lg text-xs font-mono text-[#F4F3EF] placeholder-[#575652] focus:outline-none focus:border-[#D97706] transition disabled:opacity-50 cursor-pointer"
                 />
-                <span className="text-[10px] text-slate-500 font-medium mt-1 block">Set a reminder before this document expires</span>
+                <span className="text-[10px] text-[#575652] font-mono mt-1 block">Automated renewal alert will dispatch 30 & 7 days prior</span>
               </div>
 
               {/* UPLOAD PROGRESS BAR */}
               {uploading && (
-                <div className="space-y-2.5">
-                  <div className="flex justify-between items-center text-xs font-semibold text-slate-450">
-                    <span className="flex items-center space-x-1.5 text-indigo-400">
+                <div className="space-y-2 pt-2">
+                  <div className="flex justify-between items-center text-xs font-mono">
+                    <span className="flex items-center space-x-1.5 text-[#D97706]">
                       <Loader className="animate-spin h-3.5 w-3.5" />
-                      <span>Uploading to secure vault...</span>
+                      <span>Transmitting to secure audit vault...</span>
                     </span>
-                    <span className="text-white font-bold">{uploadProgress}%</span>
+                    <span className="text-[#F4F3EF] font-bold">{uploadProgress}%</span>
                   </div>
-                  <div className="w-full bg-slate-950/80 rounded-full h-2.5 overflow-hidden border border-slate-900 shadow-inner">
+                  <div className="w-full bg-[#0A0B0D] rounded-full h-1.5 overflow-hidden border border-[#202227]">
                     <div 
-                      className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full transition-all duration-300 ease-out shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+                      className="bg-[#D97706] h-full transition-all duration-200 ease-out"
                       style={{ width: `${uploadProgress}%` }}
                     ></div>
                   </div>
@@ -376,21 +361,21 @@ const Upload = () => {
               )}
 
               {/* SUBMIT BUTTON */}
-              <div>
+              <div className="pt-2">
                 <button
                   type="submit"
                   disabled={!file || !name || uploading}
-                  className="w-full flex justify-center items-center space-x-2 py-3.5 px-4 rounded-xl shadow-lg text-sm font-bold text-white btn-gradient disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  className="w-full flex justify-center items-center space-x-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-white bg-[#D97706] hover:bg-[#B45309] border border-amber-400/20 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
                 >
                   {uploading ? (
                     <>
-                      <Loader className="animate-spin h-5 w-5" />
-                      <span>Uploading ({uploadProgress}%) ...</span>
+                      <Loader className="animate-spin h-4 w-4" />
+                      <span>Ingesting Contract ({uploadProgress}%) ...</span>
                     </>
                   ) : (
                     <>
-                      <UploadCloud className="h-5 w-5" />
-                      <span>Upload & Analyze</span>
+                      <UploadCloud className="h-4 w-4" />
+                      <span>Ingest & Audit Contract</span>
                     </>
                   )}
                 </button>

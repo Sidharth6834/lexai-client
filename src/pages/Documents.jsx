@@ -3,17 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { 
-  LayoutDashboard, 
   FileText, 
   Upload, 
-  LogOut, 
   Scale, 
   Menu, 
   X, 
   Trash2, 
   Search, 
-  SlidersHorizontal,
-  ChevronDown,
   CheckCircle2,
   AlertTriangle,
   Clock,
@@ -24,7 +20,7 @@ import { AuthContext } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 
 const Documents = () => {
-  const { user, token, logout } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // Component states
@@ -79,98 +75,36 @@ const Documents = () => {
         const response = await axios.get('/api/documents', config);
         setDocuments(response.data || []);
       } catch (err) {
-        console.error('Error polling documents:', err);
+        console.warn('Silent polling error:', err);
       }
     }, 5000);
 
     return () => clearInterval(interval);
   }, [documents, token]);
 
-  // Handle Document Deletion
-  const handleDeleteDocument = async (docId, e) => {
-    e.preventDefault();
+  // Delete document handler
+  const handleDeleteDocument = async (id, e) => {
     e.stopPropagation();
-    
-    if (!window.confirm('Are you sure you want to delete this document? This cannot be undone.')) {
+    if (!window.confirm('Are you sure you want to delete this document? This action cannot be undone.')) {
       return;
     }
 
-    const toastId = toast.loading('Deleting document...');
     try {
       const config = {
         headers: {
           Authorization: `Bearer ${token}`
         }
       };
-      await axios.delete(`/api/documents/${docId}`, config);
-      toast.success('Document deleted successfully', { id: toastId });
-      setDocuments(prev => prev.filter(doc => doc._id !== docId));
+      await axios.delete(`/api/documents/${id}`, config);
+      setDocuments(prev => prev.filter(doc => doc._id !== id));
+      toast.success('Document deleted successfully');
     } catch (err) {
-      console.error(err);
-      toast.error('Failed to delete document', { id: toastId });
+      console.error('Delete error:', err);
+      toast.error(err.response?.data?.message || 'Failed to delete document');
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    toast.success('Logged out successfully');
-    navigate('/login');
-  };
-
-  // Helper: Format Date
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  // Helper: Format initials for profile icon
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2);
-  };
-
-  // Filtering and Sorting logic
-  const filteredDocuments = documents.filter((doc) => {
-    // Search query filter
-    const matchesSearch = doc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (doc.description && doc.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    // Status filter
-    if (statusFilter === 'all') return matchesSearch;
-    if (statusFilter === 'complete') return matchesSearch && doc.status === 'complete';
-    if (statusFilter === 'failed') return matchesSearch && doc.status === 'failed';
-    if (statusFilter === 'analyzing') return matchesSearch && (doc.status === 'analyzing' || doc.status === 'uploaded');
-    
-    return matchesSearch;
-  });
-
-  const sortedDocuments = [...filteredDocuments].sort((a, b) => {
-    if (sortBy === 'newest') {
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    }
-    if (sortBy === 'oldest') {
-      return new Date(a.createdAt) - new Date(b.createdAt);
-    }
-    if (sortBy === 'name_asc') {
-      return a.name.localeCompare(b.name);
-    }
-    if (sortBy === 'name_desc') {
-      return b.name.localeCompare(a.name);
-    }
-    return 0;
-  });
-
-  // Count helper for badge tabs
+  // Helper for filter count
   const getCount = (status) => {
     if (status === 'all') return documents.length;
     if (status === 'complete') return documents.filter(d => d.status === 'complete').length;
@@ -179,70 +113,107 @@ const Documents = () => {
     return 0;
   };
 
-  return (
-    <div className="h-screen bg-[#030712] text-white flex flex-col md:flex-row relative overflow-hidden">
-      {/* Background glowing bubbles */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
+  // Helper to format date
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
+  // Filter and sort computation
+  const filteredDocuments = documents.filter(doc => {
+    const matchesSearch = doc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (doc.description && doc.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    if (!matchesSearch) return false;
+
+    if (statusFilter === 'all') return true;
+    if (statusFilter === 'complete') return doc.status === 'complete';
+    if (statusFilter === 'analyzing') return doc.status === 'analyzing' || doc.status === 'uploaded';
+    if (statusFilter === 'failed') return doc.status === 'failed';
+    return true;
+  });
+
+  const sortedDocuments = [...filteredDocuments].sort((a, b) => {
+    if (sortBy === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
+    if (sortBy === 'oldest') return new Date(a.createdAt) - new Date(b.createdAt);
+    if (sortBy === 'name_asc') return a.name.localeCompare(b.name);
+    if (sortBy === 'name_desc') return b.name.localeCompare(a.name);
+    return 0;
+  });
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
+  return (
+    <div className="h-screen bg-[#0A0B0D] text-[#F4F3EF] flex flex-col md:flex-row relative overflow-hidden font-sans">
       <Sidebar activePage="documents" isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
-      {/* Mobile Header Bar */}
-      <div className="h-16 bg-slate-950/75 backdrop-blur-xl border-b border-slate-900 flex items-center justify-between px-4 sm:px-6 md:hidden sticky top-0 z-20 w-full shrink-0">
+      {/* Mobile Top Bar */}
+      <div className="h-16 bg-[#0E0F12] border-b border-[#202227] flex items-center justify-between px-4 sm:px-6 md:hidden sticky top-0 z-20 w-full shrink-0">
         <button 
           onClick={() => setIsSidebarOpen(true)}
-          className="p-2 text-slate-400 hover:text-white hover:bg-slate-900 rounded-xl transition"
+          className="p-2 text-[#8E8D88] hover:text-white hover:bg-[#181A1F] rounded-lg transition"
         >
-          <Menu className="h-6 w-6" />
+          <Menu className="h-5 w-5" />
         </button>
-        <div className="flex items-center space-x-2 text-indigo-400">
-          <Scale className="h-6 w-6" />
-          <span className="text-lg font-bold text-white tracking-wide">LegalMind</span>
+        <div className="flex items-center space-x-2 text-[#D97706]">
+          <Scale className="h-5 w-5" />
+          <span className="font-serif text-lg font-bold text-[#F4F3EF] tracking-tight">LegalMind</span>
         </div>
-        <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+        <div className="h-8 w-8 rounded-lg bg-[#181A1F] border border-[#2A2C34] flex items-center justify-center text-[#D97706] font-mono text-xs font-semibold">
           {getInitials(user?.name)}
         </div>
       </div>
 
       {/* MAIN VIEW AREA */}
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto z-10">
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-8">
+        <div className="flex-1 p-5 sm:p-7 lg:p-10 max-w-6xl w-full mx-auto space-y-7">
           
           {/* Header section */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-[#202227]">
             <div>
-              <h1 className="text-3xl font-extrabold text-white tracking-tight">My Legal Documents</h1>
-              <p className="text-sm text-slate-400 mt-1">Browse, filter, and manage all your analyzed documents.</p>
+              <span className="text-[10px] uppercase tracking-widest font-mono text-[#D97706] font-semibold">Repository</span>
+              <h1 className="text-3xl font-serif font-bold text-[#F4F3EF] tracking-tight sm:text-4xl mt-1">
+                Legal Documents Vault
+              </h1>
+              <p className="text-xs text-[#8E8D88] mt-1">Browse, filter, and audit all uploaded contracts and covenants.</p>
             </div>
             <div>
               <Link 
                 to="/upload" 
-                className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white btn-gradient"
+                className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-[#D97706] hover:bg-[#B45309] border border-amber-400/20 shadow-sm transition"
               >
-                <Upload className="h-4 w-4" />
+                <Upload className="h-3.5 w-3.5" />
                 <span>Upload New PDF</span>
               </Link>
             </div>
           </div>
 
-          {/* Search, Filter, Sort Controls Panel */}
-          <div className="glass-card rounded-3xl p-5 shadow-2xl space-y-5 bg-slate-900/30">
-            <div className="flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
+          {/* Search, Filter, Sort Controls Panel - Swiss Minimalist Bar */}
+          <div className="rounded-xl p-4 bg-[#131518] border border-[#202227] space-y-4 shadow-sm">
+            <div className="flex flex-col lg:flex-row gap-3 lg:items-center justify-between">
               
               {/* Search Bar */}
               <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-500" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#575652]" />
                 <input 
                   type="text"
                   placeholder="Search by document name or description..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 glass-input rounded-xl text-sm transition"
+                  className="w-full pl-9 pr-8 py-2 bg-[#0A0B0D] border border-[#202227] rounded-lg text-xs text-[#F4F3EF] placeholder-[#575652] focus:outline-none focus:border-[#D97706] focus:ring-1 focus:ring-[#D97706]/30 transition"
                 />
                 {searchQuery && (
                   <button 
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-[#8E8D88] hover:text-white rounded cursor-pointer"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -251,11 +222,11 @@ const Documents = () => {
 
               {/* Sort Dropdown */}
               <div className="flex items-center space-x-2 shrink-0">
-                <ArrowUpDown className="h-4 w-4 text-slate-500" />
+                <ArrowUpDown className="h-3.5 w-3.5 text-[#575652]" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition cursor-pointer"
+                  className="bg-[#0A0B0D] border border-[#202227] rounded-lg px-3 py-2 text-xs font-mono font-medium text-[#8E8D88] focus:outline-none focus:border-[#D97706] transition cursor-pointer"
                 >
                   <option value="newest">Upload Date: Newest First</option>
                   <option value="oldest">Upload Date: Oldest First</option>
@@ -267,12 +238,12 @@ const Documents = () => {
             </div>
 
             {/* Status Tabs Bar */}
-            <div className="border-t border-slate-900/60 pt-4 flex overflow-x-auto scrollbar-none gap-2">
+            <div className="border-t border-[#202227] pt-3 flex overflow-x-auto scrollbar-none gap-2">
               {[
                 { id: 'all', label: 'All Documents' },
-                { id: 'complete', label: 'Complete', icon: CheckCircle2, color: 'text-emerald-450' },
-                { id: 'analyzing', label: 'Analyzing', icon: Clock, color: 'text-indigo-400' },
-                { id: 'failed', label: 'Failed', icon: AlertTriangle, color: 'text-rose-450' }
+                { id: 'complete', label: 'Complete', icon: CheckCircle2, color: 'text-[#10B981]' },
+                { id: 'analyzing', label: 'Analyzing', icon: Clock, color: 'text-[#D97706]' },
+                { id: 'failed', label: 'Failed', icon: AlertTriangle, color: 'text-[#E11D48]' }
               ].map((tab) => {
                 const isActive = statusFilter === tab.id;
                 const Icon = tab.icon;
@@ -280,16 +251,16 @@ const Documents = () => {
                   <button
                     key={tab.id}
                     onClick={() => setStatusFilter(tab.id)}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition flex-shrink-0 cursor-pointer ${
+                    className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-mono transition flex-shrink-0 cursor-pointer ${
                       isActive 
-                        ? 'bg-slate-800/80 text-white border border-slate-700 shadow-md shadow-black/10' 
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/30 border border-transparent'
+                        ? 'bg-[#181A1F] text-[#F4F3EF] border border-[#2A2C34] shadow-sm font-semibold' 
+                        : 'text-[#8E8D88] hover:text-[#F4F3EF] hover:bg-[#181A1F]/50 border border-transparent'
                     }`}
                   >
                     {Icon && <Icon className={`h-3.5 w-3.5 ${tab.color}`} />}
                     <span>{tab.label}</span>
-                    <span className={`px-1.5 py-0.5 rounded-md text-[10px] ${
-                      isActive ? 'bg-indigo-600 text-white' : 'bg-slate-950 text-slate-500'
+                    <span className={`px-1.5 py-0.2 rounded text-[10px] ${
+                      isActive ? 'bg-[#D97706] text-white' : 'bg-[#0A0B0D] text-[#8E8D88]'
                     }`}>
                       {getCount(tab.id)}
                     </span>
@@ -302,19 +273,19 @@ const Documents = () => {
           {/* DOCUMENTS GRID / LIST VIEW */}
           {loading ? (
             /* SKELETON LOADERS */
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-slate-900/40 border border-slate-800 rounded-3xl h-[200px]" />
+                <div key={i} className="bg-[#131518] border border-[#202227] rounded-xl h-[180px] animate-pulse" />
               ))}
             </div>
           ) : sortedDocuments.length === 0 ? (
             /* EMPTY VIEW */
-            <div className="glass-card rounded-3xl p-12 text-center flex flex-col items-center justify-center shadow-xl">
-              <div className="p-4 bg-slate-900/60 rounded-full text-slate-500 border border-slate-800 mb-4">
-                <FileText className="h-12 w-12" />
+            <div className="rounded-xl p-12 text-center flex flex-col items-center justify-center bg-[#131518] border border-[#202227]">
+              <div className="p-3 bg-[#181A1F] rounded-lg text-[#8E8D88] border border-[#202227] mb-3">
+                <FileText className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">No documents found</h3>
-              <p className="text-slate-400 text-sm max-w-md mb-6">
+              <h3 className="text-base font-serif font-bold text-[#F4F3EF] mb-1">No documents found</h3>
+              <p className="text-[#8E8D88] text-xs max-w-md mb-5">
                 {searchQuery || statusFilter !== 'all' 
                   ? "We couldn't find any documents matching your active search query or status filters." 
                   : "You haven't uploaded any PDF documents yet. Upload a document to start audit reviews."}
@@ -322,60 +293,57 @@ const Documents = () => {
               {(searchQuery || statusFilter !== 'all') ? (
                 <button
                   onClick={() => { setSearchQuery(''); setStatusFilter('all'); }}
-                  className="px-5 py-2.5 bg-slate-900/60 text-slate-350 hover:bg-slate-800 font-semibold rounded-xl text-sm border border-slate-800 transition cursor-pointer"
+                  className="px-4 py-2 bg-[#181A1F] text-[#C6C5BF] hover:bg-[#202227] text-xs font-semibold rounded-lg border border-[#2A2C34] transition cursor-pointer"
                 >
                   Clear Search & Filters
                 </button>
               ) : (
                 <Link 
                   to="/upload" 
-                  className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white btn-gradient"
+                  className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-[#D97706] hover:bg-[#B45309] transition"
                 >
-                  <Upload className="h-4 w-4" />
+                  <Upload className="h-3.5 w-3.5" />
                   <span>Upload PDF</span>
                 </Link>
               )}
             </div>
           ) : (
-            /* DYNAMIC DOCUMENTS CARDS */
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            /* DYNAMIC DOCUMENTS CARDS - Swiss Minimalist Precision */
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {sortedDocuments.map((doc) => {
-                // Determine status badge config
-                let statusBg = 'bg-slate-550/10 text-slate-400 border-slate-500/20';
-                let statusDot = 'bg-slate-400';
+                let statusBg = 'bg-[#181A1F] text-[#8E8D88] border-[#2A2C34]';
+                let statusDot = 'bg-[#8E8D88]';
                 let statusText = doc.status;
 
                 if (doc.status === 'complete') {
-                  statusBg = 'bg-emerald-500/10 text-emerald-450 border-emerald-500/25';
-                  statusDot = 'bg-emerald-400';
+                  statusBg = 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/25';
+                  statusDot = 'bg-[#10B981]';
                   statusText = 'Complete';
                 } else if (doc.status === 'analyzing' || doc.status === 'uploaded') {
-                  statusBg = 'bg-indigo-500/10 text-indigo-400 border-indigo-500/25';
-                  statusDot = 'bg-indigo-450 animate-pulse';
+                  statusBg = 'bg-[#D97706]/10 text-[#D97706] border-[#D97706]/30';
+                  statusDot = 'bg-[#D97706] animate-pulse';
                   statusText = 'Analyzing';
                 } else if (doc.status === 'failed') {
-                  statusBg = 'bg-rose-500/10 text-rose-450 border-rose-500/25';
-                  statusDot = 'bg-rose-450';
+                  statusBg = 'bg-[#E11D48]/10 text-[#E11D48] border-[#E11D48]/25';
+                  statusDot = 'bg-[#E11D48]';
                   statusText = 'Failed';
                 }
 
-                // Determine risk badge config
-                let riskBg = 'bg-slate-900 text-slate-400';
+                let riskBg = 'bg-[#181A1F] text-[#8E8D88] border-[#2A2C34]';
                 let riskLabel = 'Not Evaluated';
                 if (doc.status === 'complete') {
                   if (doc.riskLevel === 'safe' || doc.riskScore === 'Safe') {
-                    riskBg = 'bg-emerald-500/10 text-emerald-450 border border-emerald-500/20';
+                    riskBg = 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/25';
                     riskLabel = 'Low Risk';
                   } else if (doc.riskLevel === 'caution' || doc.riskScore === 'Caution') {
-                    riskBg = 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
-                    riskLabel = 'Medium Risk';
+                    riskBg = 'bg-[#D97706]/10 text-[#D97706] border border-[#D97706]/30';
+                    riskLabel = 'Caution';
                   } else if (doc.riskLevel === 'risky' || doc.riskScore === 'Risky') {
-                    riskBg = 'bg-rose-500/10 text-rose-450 border border-rose-500/20';
+                    riskBg = 'bg-[#E11D48]/10 text-[#E11D48] border border-[#E11D48]/25';
                     riskLabel = 'High Risk';
                   }
                 }
 
-                // Format document type label
                 const getDocTypeLabel = (type) => {
                   if (!type) return 'Other';
                   return type
@@ -387,41 +355,37 @@ const Documents = () => {
                 return (
                   <div 
                     key={doc._id}
-                    className="glass-card hover:border-slate-700 rounded-3xl overflow-hidden shadow-lg transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 transform"
+                    className="p-5 rounded-xl bg-[#131518] border border-[#202227] hover:border-[#2E313A] transition-all duration-150 flex flex-col justify-between group shadow-sm"
                   >
                     {/* Card Header Info */}
-                    <div className="p-5 space-y-4">
+                    <div className="space-y-3.5">
                       <div className="flex justify-between items-start gap-2">
-                        {/* Type badge */}
-                        <span className="px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-wider bg-indigo-500/10 text-indigo-400 rounded-md border border-indigo-500/20">
+                        <span className="px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider bg-[#181A1F] text-[#8E8D88] rounded border border-[#2A2C34]">
                           {getDocTypeLabel(doc.type)}
                         </span>
                         
-                        {/* Status badge */}
-                        <span className={`inline-flex items-center space-x-1.5 px-2.5 py-0.5 text-[9px] font-bold rounded-full border ${statusBg}`}>
+                        <span className={`inline-flex items-center space-x-1.5 px-2 py-0.5 text-[9px] font-mono font-medium rounded border ${statusBg}`}>
                           <span className={`h-1.5 w-1.5 rounded-full ${statusDot}`}></span>
                           <span>{statusText}</span>
                         </span>
                       </div>
 
-                      {/* Name & Desc */}
-                      <div className="space-y-1.5">
-                        <h3 className="text-sm font-bold text-white group-hover:text-indigo-400 transition truncate" title={doc.name}>
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-semibold text-[#F4F3EF] group-hover:text-white transition truncate" title={doc.name}>
                           {doc.name}
                         </h3>
-                        <p className="text-xs text-slate-400 line-clamp-2 h-8" title={doc.description}>
+                        <p className="text-[11px] text-[#8E8D88] line-clamp-2 h-7" title={doc.description}>
                           {doc.description || 'No description provided.'}
                         </p>
                       </div>
 
-                      {/* Upload timestamp and risk indicator */}
-                      <div className="flex items-center justify-between pt-3 border-t border-slate-900/60 text-[10px] text-slate-500">
+                      <div className="flex items-center justify-between pt-2.5 border-t border-[#202227] text-[10px] text-[#8E8D88] font-mono">
                         <div className="flex items-center space-x-1">
-                          <Clock className="h-3.5 w-3.5 text-slate-650" />
+                          <Clock className="h-3 w-3 text-[#575652]" />
                           <span>{formatDate(doc.createdAt)}</span>
                         </div>
                         {doc.status === 'complete' && (
-                          <span className={`px-2 py-0.5 rounded-md text-[9px] font-extrabold tracking-wider uppercase ${riskBg}`}>
+                          <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-semibold uppercase ${riskBg}`}>
                             {riskLabel}
                           </span>
                         )}
@@ -429,32 +393,32 @@ const Documents = () => {
                     </div>
 
                     {/* Card Actions Footer */}
-                    <div className="bg-slate-950/20 px-5 py-3 border-t border-slate-900/60 flex items-center justify-between gap-4">
+                    <div className="pt-3 mt-3 border-t border-[#202227] flex items-center justify-between gap-2">
                       {doc.status === 'complete' ? (
                         <Link
                           to={`/document/${doc._id}`}
-                          className="flex-1 inline-flex items-center justify-center space-x-1.5 py-2 px-3 bg-indigo-600/90 hover:bg-indigo-600 text-white rounded-xl text-xs font-bold transition duration-150 btn-gradient"
+                          className="flex-1 inline-flex items-center justify-center space-x-1.5 py-1.5 px-3 bg-[#D97706] hover:bg-[#B45309] text-white rounded-lg text-xs font-semibold transition"
                         >
                           <span>View Audit</span>
                           <ExternalLink className="h-3 w-3" />
                         </Link>
                       ) : doc.status === 'failed' ? (
-                        <span className="flex-1 text-center py-2 px-3 bg-rose-500/5 border border-rose-500/10 text-rose-450 rounded-xl text-xs font-semibold">
+                        <span className="flex-1 text-center py-1.5 px-3 bg-rose-500/10 border border-rose-500/20 text-[#E11D48] rounded-lg text-xs font-mono font-medium">
                           Analysis Failed
                         </span>
                       ) : (
-                        <div className="flex-1 flex items-center justify-center space-x-2 py-2 px-3 bg-slate-900/40 border border-slate-900 text-slate-500 rounded-xl text-xs font-semibold">
-                          <div className="animate-spin h-3.5 w-3.5 border-2 border-indigo-500 border-t-transparent rounded-full" />
+                        <div className="flex-1 flex items-center justify-center space-x-2 py-1.5 px-3 bg-[#181A1F] border border-[#202227] text-[#8E8D88] rounded-lg text-xs font-mono">
+                          <div className="animate-spin h-3 w-3 border-2 border-[#D97706] border-t-transparent rounded-full" />
                           <span>Auditing...</span>
                         </div>
                       )}
 
                       <button
                         onClick={(e) => handleDeleteDocument(doc._id, e)}
-                        className="p-2 text-slate-500 hover:text-rose-450 hover:bg-rose-500/10 rounded-xl border border-transparent hover:border-rose-500/20 transition cursor-pointer"
+                        className="p-1.5 text-[#8E8D88] hover:text-[#E11D48] hover:bg-rose-500/10 rounded-lg border border-transparent hover:border-rose-500/20 transition cursor-pointer"
                         title="Delete Document"
                       >
-                        <Trash2 className="h-4.5 w-4.5" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
 

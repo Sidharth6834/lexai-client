@@ -34,11 +34,11 @@ const Sidebar = ({ activePage, isSidebarOpen, setIsSidebarOpen }) => {
   };
 
   const getNavLinkClass = (pageName) => {
-    const baseClass = "flex items-center space-x-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 border border-transparent";
+    const baseClass = "group flex items-center space-x-3 px-3.5 py-2.5 text-xs font-medium rounded-lg transition-all duration-150 border";
     if (activePage === pageName) {
-      return `${baseClass} bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/20 border-indigo-500/20 translate-x-1`;
+      return `${baseClass} bg-[#181A1F] text-[#F4F3EF] border-[#2A2C34] shadow-sm font-semibold`;
     }
-    return `${baseClass} text-slate-400 hover:bg-slate-900/40 hover:text-white hover:border-slate-800/30 hover:translate-x-1`;
+    return `${baseClass} text-[#8E8D88] hover:text-[#F4F3EF] hover:bg-[#131518] hover:border-[#202227] border-transparent`;
   };
 
   return (
@@ -46,39 +46,47 @@ const Sidebar = ({ activePage, isSidebarOpen, setIsSidebarOpen }) => {
       {/* Mobile Sidebar Overlay Dimmer */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-40 md:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-black/75 z-40 md:hidden backdrop-blur-sm transition-opacity duration-300"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* LEFT SIDEBAR (Desktop: Sticky | Mobile: Drawer) */}
-      <aside className={`w-[260px] bg-slate-950/60 backdrop-blur-xl flex flex-col justify-between border-r border-slate-900/60 fixed md:sticky top-0 h-screen z-50 transition-transform duration-300 ease-in-out md:translate-x-0 shrink-0 ${
+      <aside className={`w-[260px] bg-[#0E0F12] flex flex-col justify-between border-r border-[#202227] fixed md:sticky top-0 h-screen z-50 transition-transform duration-200 ease-in-out md:translate-x-0 shrink-0 ${
         isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
       }`}>
         <div>
-          {/* Logo */}
-          <div className="h-16 flex items-center justify-between px-6 border-b border-slate-900/60 text-indigo-400">
-            <div className="flex items-center space-x-2">
-              <Scale className="h-7 w-7" />
-              <span className="text-xl font-extrabold text-white tracking-wider">LegalMind</span>
-            </div>
+          {/* Logo & Chambers Seal */}
+          <div className="h-16 flex items-center justify-between px-5 border-b border-[#202227]">
+            <Link to="/dashboard" className="flex items-center space-x-2.5 group">
+              <div className="w-8 h-8 rounded-lg bg-[#181A1F] border border-[#2A2C34] flex items-center justify-center text-[#D97706] group-hover:border-[#D97706]/40 transition">
+                <Scale className="h-4.5 w-4.5" />
+              </div>
+              <div>
+                <span className="font-serif text-lg font-bold text-[#F4F3EF] tracking-tight">LegalMind</span>
+                <span className="block text-[9px] uppercase tracking-widest font-mono text-[#8E8D88]">Chambers AI</span>
+              </div>
+            </Link>
             {/* Mobile Close Button */}
             <button 
               onClick={() => setIsSidebarOpen(false)}
-              className="md:hidden p-1 text-slate-400 hover:text-white hover:bg-slate-900 rounded-xl transition"
+              className="md:hidden p-1.5 text-[#8E8D88] hover:text-white hover:bg-[#181A1F] rounded-lg transition"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </button>
           </div>
 
           {/* Navigation Links */}
-          <nav className="mt-6 px-4 space-y-1.5">
+          <div className="px-3 pt-5 pb-2">
+            <span className="px-2 text-[10px] uppercase tracking-widest font-mono text-[#575652] font-semibold">Platform</span>
+          </div>
+          <nav className="px-3 space-y-1">
             <Link 
               to="/dashboard" 
               onClick={() => setIsSidebarOpen(false)}
               className={getNavLinkClass('dashboard')}
             >
-              <LayoutDashboard className="h-5 w-5" />
+              <LayoutDashboard className={`h-4 w-4 ${activePage === 'dashboard' ? 'text-[#D97706]' : 'text-[#8E8D88] group-hover:text-[#F4F3EF]'}`} />
               <span>Dashboard</span>
             </Link>
             <Link 
@@ -86,7 +94,7 @@ const Sidebar = ({ activePage, isSidebarOpen, setIsSidebarOpen }) => {
               onClick={() => setIsSidebarOpen(false)}
               className={getNavLinkClass('documents')}
             >
-              <FileText className="h-5 w-5" />
+              <FileText className={`h-4 w-4 ${activePage === 'documents' ? 'text-[#D97706]' : 'text-[#8E8D88] group-hover:text-[#F4F3EF]'}`} />
               <span>My Documents</span>
             </Link>
             <Link 
@@ -94,7 +102,7 @@ const Sidebar = ({ activePage, isSidebarOpen, setIsSidebarOpen }) => {
               onClick={() => setIsSidebarOpen(false)}
               className={getNavLinkClass('upload')}
             >
-              <Upload className="h-5 w-5" />
+              <Upload className={`h-4 w-4 ${activePage === 'upload' ? 'text-[#D97706]' : 'text-[#8E8D88] group-hover:text-[#F4F3EF]'}`} />
               <span>Upload Document</span>
             </Link>
             <Link 
@@ -102,7 +110,7 @@ const Sidebar = ({ activePage, isSidebarOpen, setIsSidebarOpen }) => {
               onClick={() => setIsSidebarOpen(false)}
               className={getNavLinkClass('profile')}
             >
-              <User className="h-5 w-5" />
+              <User className={`h-4 w-4 ${activePage === 'profile' ? 'text-[#D97706]' : 'text-[#8E8D88] group-hover:text-[#F4F3EF]'}`} />
               <span>My Profile</span>
             </Link>
             {user?.role === 'admin' && (
@@ -111,7 +119,7 @@ const Sidebar = ({ activePage, isSidebarOpen, setIsSidebarOpen }) => {
                 onClick={() => setIsSidebarOpen(false)}
                 className={getNavLinkClass('admin')}
               >
-                <BarChart2 className="h-5 w-5" />
+                <BarChart2 className={`h-4 w-4 ${activePage === 'admin' ? 'text-[#D97706]' : 'text-[#8E8D88] group-hover:text-[#F4F3EF]'}`} />
                 <span>Admin Panel</span>
               </Link>
             )}
@@ -119,25 +127,25 @@ const Sidebar = ({ activePage, isSidebarOpen, setIsSidebarOpen }) => {
         </div>
 
         {/* User profile & Logout */}
-        <div className="p-4 border-t border-slate-900/60 space-y-4">
+        <div className="p-3.5 border-t border-[#202227] space-y-2.5 bg-[#0A0B0D]/50">
           <Link 
             to="/profile"
             onClick={() => setIsSidebarOpen(false)}
-            className="flex items-center space-x-3 px-2 py-2 rounded-xl hover:bg-slate-900/40 border border-transparent hover:border-slate-800/40 transition duration-150"
+            className="flex items-center space-x-3 p-2 rounded-lg hover:bg-[#131518] border border-transparent hover:border-[#202227] transition"
           >
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-extrabold text-sm shadow-md border border-slate-700/50 transform hover:scale-105 transition-transform duration-200 shrink-0">
+            <div className="h-8 w-8 rounded-lg bg-[#181A1F] border border-[#2A2C34] flex items-center justify-center text-[#D97706] font-mono text-xs font-semibold shrink-0">
               {getInitials(user?.name)}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-white truncate">{user?.name || 'User Profile'}</p>
-              <p className="text-xs text-slate-500 truncate">{user?.email || 'user@example.com'}</p>
+              <p className="text-xs font-semibold text-[#F4F3EF] truncate">{user?.name || 'User Profile'}</p>
+              <p className="text-[10px] text-[#8E8D88] font-mono truncate">{user?.email || 'user@example.com'}</p>
             </div>
           </Link>
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 text-sm font-semibold rounded-xl text-rose-450 hover:bg-rose-500/10 hover:text-rose-400 border border-rose-500/10 hover:border-rose-500/20 transition duration-150 cursor-pointer"
+            className="w-full flex items-center justify-center space-x-2 px-3 py-2 text-xs font-medium rounded-lg text-[#8E8D88] hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition cursor-pointer"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-3.5 w-3.5" />
             <span>Logout</span>
           </button>
         </div>

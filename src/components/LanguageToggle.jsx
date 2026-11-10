@@ -28,7 +28,6 @@ const LanguageToggle = ({ documentId, currentLanguage, status, token, onLanguage
       const res = await axios.patch(`/api/documents/${documentId}/language`, { language: targetLang }, config);
       
       if (res.data.success) {
-        // Notify parent of the language change (so it updates document status to 'analyzing' and triggers polling)
         onLanguageChanged(targetLang);
         toast.success(targetLang === 'hindi' ? "Language changed to Hindi" : "Language changed to English", { id: toastId });
       }
@@ -41,33 +40,33 @@ const LanguageToggle = ({ documentId, currentLanguage, status, token, onLanguage
   };
 
   return (
-    <div className="flex items-center space-x-2 bg-slate-900/60 p-1.5 rounded-xl border border-white/5 shadow-md">
+    <div className="flex items-center space-x-1.5 bg-[#181A1F] p-1 rounded-lg border border-[#202227]">
       <button
         disabled={isAnalyzing || loading}
         onClick={() => handleToggle('english')}
-        className={`px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+        className={`px-2.5 py-1 text-[11px] font-mono font-semibold rounded transition cursor-pointer ${
           currentLanguage === 'english'
-            ? 'bg-blue-600 text-white shadow-md'
-            : 'text-slate-400 hover:text-slate-200 disabled:opacity-50'
+            ? 'bg-[#D97706] text-white shadow-sm'
+            : 'text-[#8E8D88] hover:text-[#F4F3EF] disabled:opacity-50'
         }`}
       >
         EN
       </button>
-      <span className="text-slate-700 text-xs font-bold">|</span>
+      <span className="text-[#2E313A] text-xs font-mono">|</span>
       <button
         disabled={isAnalyzing || loading}
         onClick={() => handleToggle('hindi')}
-        className={`px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+        className={`px-2.5 py-1 text-[11px] font-mono font-semibold rounded transition cursor-pointer ${
           currentLanguage === 'hindi'
-            ? 'bg-blue-600 text-white shadow-md'
-            : 'text-slate-400 hover:text-slate-200 disabled:opacity-50'
+            ? 'bg-[#D97706] text-white shadow-sm'
+            : 'text-[#8E8D88] hover:text-[#F4F3EF] disabled:opacity-50'
         }`}
       >
         हिंदी
       </button>
       {(isAnalyzing || loading) && (
-        <div className="pl-1 text-blue-400" title="AI is analyzing...">
-          <Loader className="animate-spin h-3.5 w-3.5" />
+        <div className="pl-1 text-[#D97706]" title="AI is analyzing...">
+          <Loader className="animate-spin h-3 w-3" />
         </div>
       )}
     </div>

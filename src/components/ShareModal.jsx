@@ -33,7 +33,6 @@ const ShareModal = ({ isOpen, onClose, documentId, token, shareEnabled, shareTok
       const response = await axios.post(`/api/documents/${documentId}/share`, {}, config);
       if (response.data && response.data.shareUrl) {
         setShareUrl(response.data.shareUrl);
-        // Extract token from url
         const generatedToken = response.data.shareUrl.split('/').pop();
         const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
         
@@ -110,19 +109,17 @@ const ShareModal = ({ isOpen, onClose, documentId, token, shareEnabled, shareTok
       />
 
       {/* Modal Container */}
-      <div className="relative glass-card w-full max-w-md rounded-3xl border border-white/10 p-6 sm:p-8 shadow-2xl overflow-hidden z-10 animate-in fade-in zoom-in duration-200">
-        {/* Glow ambient background shape */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none" />
-
+      <div className="relative w-full max-w-md rounded-xl bg-[#131518] border border-[#202227] p-6 sm:p-7 shadow-2xl overflow-hidden z-10 animate-in fade-in zoom-in duration-150 font-sans">
+        
         {/* Header Title */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-2 text-indigo-400">
-            <Link2 className="h-5 w-5" />
-            <h3 className="text-lg font-bold text-white tracking-tight">Share Analysis</h3>
+        <div className="flex justify-between items-center mb-5 pb-3 border-b border-[#202227]">
+          <div className="flex items-center space-x-2 text-[#D97706]">
+            <Link2 className="h-4.5 w-4.5" />
+            <h3 className="text-base font-serif font-bold text-[#F4F3EF] tracking-tight">Share Audit Intelligence</h3>
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:bg-slate-900/60 hover:text-white rounded-lg transition"
+            className="p-1 text-[#8E8D88] hover:bg-[#181A1F] hover:text-[#F4F3EF] rounded-lg transition"
           >
             <X className="h-4 w-4" />
           </button>
@@ -131,16 +128,16 @@ const ShareModal = ({ isOpen, onClose, documentId, token, shareEnabled, shareTok
         {/* Modal content based on share state */}
         {!shareUrl ? (
           /* NOT SHARED YET */
-          <div className="space-y-6">
-            <p className="text-xs text-slate-350 leading-relaxed font-semibold">
-              Generate a secure, public share link that allows anyone to view the audit ratings, summary, and clauses analysis report of this document without requiring an account login.
+          <div className="space-y-5">
+            <p className="text-xs text-[#8E8D88] leading-relaxed">
+              Generate a secure, authenticated link allowing third-party counsel or executive review without requiring an account login.
             </p>
-            <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 flex items-start space-x-3 text-slate-400 shadow-inner">
-              <AlertCircle className="h-5 w-5 mt-0.5 text-indigo-400 shrink-0" />
+            <div className="bg-[#0A0B0D] border border-[#202227] rounded-lg p-3.5 flex items-start space-x-3 text-[#8E8D88]">
+              <AlertCircle className="h-4 w-4 mt-0.5 text-[#D97706] shrink-0" />
               <div>
-                <p className="text-xs font-bold text-white">Expiration Warning</p>
-                <p className="text-[11px] text-slate-500 mt-0.5 font-medium leading-relaxed">
-                  For your security, shared links are temporary and automatically expire in 7 days. Chat histories and original PDF files are not shared.
+                <p className="text-xs font-semibold text-[#F4F3EF]">Security & Expiration Notice</p>
+                <p className="text-[11px] text-[#575652] mt-0.5 font-mono leading-relaxed">
+                  Shared links auto-expire in 7 days. Raw chat queries and original storage credentials remain inaccessible.
                 </p>
               </div>
             </div>
@@ -148,65 +145,64 @@ const ShareModal = ({ isOpen, onClose, documentId, token, shareEnabled, shareTok
             <button
               onClick={handleGenerateLink}
               disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl text-xs font-extrabold text-white btn-gradient shadow-lg disabled:opacity-50 cursor-pointer flex justify-center items-center space-x-2"
+              className="w-full py-2.5 px-4 rounded-lg text-xs font-semibold text-white bg-[#D97706] hover:bg-[#B45309] shadow-sm disabled:opacity-50 cursor-pointer flex justify-center items-center space-x-2 transition"
             >
               <span>Generate Share Link</span>
             </button>
           </div>
         ) : (
           /* ALREADY SHARED */
-          <div className="space-y-6 flex flex-col items-center">
+          <div className="space-y-5 flex flex-col items-center">
             
             {/* Input URL Copy Field */}
-            <div className="w-full space-y-2">
-              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest">Shareable URL</label>
+            <div className="w-full space-y-1.5">
+              <label className="block text-[10px] font-mono uppercase tracking-widest text-[#8E8D88]">Shareable URL</label>
               <div className="flex space-x-2">
                 <input
                   type="text"
                   readOnly
                   value={shareUrl}
-                  className="flex-1 px-4 py-3 bg-[#030712]/60 border border-white/5 rounded-xl text-xs text-slate-300 focus:outline-none"
+                  className="flex-1 px-3 py-2 bg-[#0A0B0D] border border-[#202227] rounded-lg text-xs font-mono text-[#F4F3EF] focus:outline-none"
                 />
                 <button
                   onClick={handleCopyLink}
-                  className="p-3 bg-slate-900/60 hover:bg-slate-800 border border-white/5 rounded-xl text-indigo-400 hover:text-white transition cursor-pointer"
+                  className="px-3 bg-[#181A1F] hover:bg-[#202227] border border-[#2A2C34] rounded-lg text-[#D97706] hover:text-[#F4F3EF] transition cursor-pointer"
                   title="Copy to Clipboard"
                 >
-                  {copied ? <Check className="h-4.5 w-4.5 text-emerald-450" /> : <Copy className="h-4.5 w-4.5" />}
+                  {copied ? <Check className="h-4 w-4 text-[#10B981]" /> : <Copy className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
             {/* QR Code Container */}
-            <div className="bg-white p-4.5 rounded-2xl shadow-xl flex items-center justify-center mt-2 border border-slate-200">
+            <div className="bg-[#FFFFFF] p-3 rounded-lg shadow-md flex items-center justify-center mt-1 border border-[#202227]">
               <QRCodeSVG 
                 value={shareUrl} 
-                size={140} 
+                size={130} 
                 bgColor="#ffffff"
-                fgColor="#030712"
+                fgColor="#0A0B0D"
                 level="M"
                 includeMargin={false}
               />
             </div>
-            <p className="text-[10px] text-slate-500 font-extrabold tracking-widest uppercase mt-1">Scan QR code to view</p>
+            <p className="text-[10px] font-mono text-[#575652] uppercase tracking-wider">Scan QR code for direct mobile access</p>
 
             {/* Expiry Alert banner */}
-            <div className="w-full text-center py-2 bg-indigo-500/5 border border-indigo-500/10 rounded-xl">
-              <span className="text-[10px] text-indigo-400 font-bold">
-                Link expires: {formatExpiryDate(shareExpiresAt)}
+            <div className="w-full text-center py-2 bg-[#181A1F] border border-[#202227] rounded-lg">
+              <span className="text-[10px] font-mono text-[#D97706]">
+                Expires: {formatExpiryDate(shareExpiresAt)}
               </span>
             </div>
 
-            {/* Divider */}
-            <div className="w-full border-t border-white/5 my-2" />
+            <div className="w-full border-t border-[#202227]" />
 
             {/* Disable Link Action Button */}
             <button
               onClick={handleDisableLink}
               disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl text-xs font-extrabold text-rose-450 hover:text-rose-400 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/10 hover:border-rose-500/20 transition cursor-pointer flex justify-center items-center space-x-2"
+              className="w-full py-2 px-3 rounded-lg text-xs font-semibold text-[#E11D48] hover:text-white bg-rose-500/10 hover:bg-[#E11D48] border border-rose-500/20 transition cursor-pointer flex justify-center items-center space-x-1.5"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3.5 w-3.5" />
               <span>Disable Share Link</span>
             </button>
 

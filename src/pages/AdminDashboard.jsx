@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
   BarChart2, 
@@ -11,8 +11,7 @@ import {
   Scale,
   TrendingUp,
   AlertCircle,
-  RefreshCw,
-  FileText
+  RefreshCw
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -108,13 +107,11 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (token) {
-      // Redirect if not admin
       if (user && user.role !== 'admin') {
         navigate('/dashboard');
         return;
       }
       
-      // Parallel loading calls
       Promise.all([
         fetchStats(),
         fetchDocTypes(),
@@ -158,14 +155,13 @@ const AdminDashboard = () => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  // Shared Error Fallback Component
   const ErrorCard = ({ message, onRetry }) => (
-    <div className="flex flex-col items-center justify-center p-6 text-center space-y-3 bg-rose-500/5 border border-rose-500/10 rounded-2xl h-full min-h-[220px]">
-      <AlertCircle className="h-8 w-8 text-rose-455 animate-pulse" />
-      <p className="text-xs text-slate-400 font-semibold leading-relaxed max-w-xs">{message}</p>
+    <div className="flex flex-col items-center justify-center p-6 text-center space-y-3 bg-rose-500/5 border border-rose-500/20 rounded-xl h-full min-h-[200px]">
+      <AlertCircle className="h-6 w-6 text-[#E11D48] animate-pulse" />
+      <p className="text-xs text-[#8E8D88] font-mono leading-relaxed max-w-xs">{message}</p>
       <button 
         onClick={onRetry}
-        className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-extrabold text-xs rounded-xl border border-rose-500/20 transition cursor-pointer"
+        className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#181A1F] hover:bg-[#202227] text-[#E11D48] font-mono text-xs rounded-lg border border-[#2A2C34] transition cursor-pointer"
       >
         <RefreshCw className="h-3 w-3" />
         <span>Retry</span>
@@ -174,57 +170,52 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="h-screen bg-[#030712] text-white flex flex-col md:flex-row relative overflow-hidden">
-      {/* Background glowing shapes */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
-
+    <div className="h-screen bg-[#0A0B0D] text-[#F4F3EF] flex flex-col md:flex-row relative overflow-hidden font-sans">
       <Sidebar activePage="admin" isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
-      {/* Mobile Header Bar */}
-      <div className="h-16 bg-slate-950/75 backdrop-blur-xl border-b border-slate-900 flex items-center justify-between px-4 sm:px-6 md:hidden sticky top-0 z-20 w-full shrink-0">
+      {/* Mobile Top Bar */}
+      <div className="h-16 bg-[#0E0F12] border-b border-[#202227] flex items-center justify-between px-4 sm:px-6 md:hidden sticky top-0 z-20 w-full shrink-0">
         <button 
           onClick={() => setIsSidebarOpen(true)}
-          className="p-2 text-slate-400 hover:text-white hover:bg-slate-900 rounded-xl transition"
+          className="p-2 text-[#8E8D88] hover:text-white hover:bg-[#181A1F] rounded-lg transition"
         >
-          <Menu className="h-6 w-6" />
+          <Menu className="h-5 w-5" />
         </button>
-        <div className="flex items-center space-x-2 text-indigo-400">
-          <Scale className="h-6 w-6" />
-          <span className="text-lg font-bold text-white tracking-wide">LegalMind</span>
+        <div className="flex items-center space-x-2 text-[#D97706]">
+          <Scale className="h-5 w-5" />
+          <span className="font-serif text-lg font-bold text-[#F4F3EF] tracking-tight">LegalMind</span>
         </div>
-        <div className="h-8 w-8 rounded-full bg-indigo-650 flex items-center justify-center text-white font-bold text-xs shadow-md">
+        <div className="h-8 w-8 rounded-lg bg-[#181A1F] border border-[#2A2C34] flex items-center justify-center text-[#D97706] font-mono text-xs font-semibold">
           {getInitials(user?.name)}
         </div>
       </div>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 min-w-0 h-screen p-6 sm:p-8 lg:p-12 overflow-y-auto z-10">
-        <div className="max-w-5xl mx-auto space-y-8">
+      <main className="flex-1 min-w-0 h-screen p-5 sm:p-7 lg:p-10 overflow-y-auto z-10">
+        <div className="max-w-6xl mx-auto space-y-7">
           
           {/* HEADER */}
-          <header className="flex justify-between items-end pb-6 border-b border-white/5">
+          <header className="flex justify-between items-end pb-5 border-b border-[#202227]">
             <div>
-              <div className="flex items-center space-x-2 text-indigo-400">
-                <BarChart2 className="h-6 w-6" />
-                <span className="text-xs font-black tracking-widest uppercase">Platform Control</span>
+              <div className="flex items-center space-x-2 text-[#D97706]">
+                <BarChart2 className="h-4 w-4" />
+                <span className="text-[10px] font-mono font-semibold tracking-widest uppercase">Platform Governance</span>
               </div>
-              <h1 className="text-2xl font-black text-white tracking-tight sm:text-3xl mt-1">Admin Analytics</h1>
+              <h1 className="text-2xl font-serif font-bold text-[#F4F3EF] tracking-tight sm:text-3xl mt-1">
+                Chambers Admin Intelligence
+              </h1>
             </div>
-            <span className="text-xs text-slate-500 font-extrabold uppercase tracking-widest">Last 30 days</span>
+            <span className="text-[10px] text-[#575652] font-mono uppercase tracking-widest">30-Day Operational Window</span>
           </header>
 
-          {/* ROW 1: OVERVIEW CARDS */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* ROW 1: OVERVIEW TILES - Swiss Minimalist */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {stats.loading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="glass-card rounded-2xl p-5 border border-white/5 animate-pulse space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div className="h-4 bg-slate-900 rounded w-1/2"></div>
-                    <div className="h-8 w-8 bg-slate-900 rounded-xl"></div>
-                  </div>
-                  <div className="h-8 bg-slate-900 rounded w-1/3"></div>
-                  <div className="h-3 bg-slate-900 rounded w-2/3"></div>
+                <div key={i} className="rounded-xl p-5 bg-[#131518] border border-[#202227] animate-pulse space-y-3">
+                  <div className="h-3 bg-[#181A1F] rounded w-1/2"></div>
+                  <div className="h-7 bg-[#181A1F] rounded w-1/3"></div>
+                  <div className="h-2.5 bg-[#181A1F] rounded w-2/3"></div>
                 </div>
               ))
             ) : stats.error ? (
@@ -234,62 +225,58 @@ const AdminDashboard = () => {
             ) : (
               <>
                 {/* Total Users */}
-                <div className="glass-card bg-[#0e1322]/30 rounded-2xl p-5 border border-white/5 shadow-lg flex flex-col justify-between relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-full blur-xl pointer-events-none" />
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Total Users</span>
-                    <div className="p-2 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/10">
-                      <Users className="h-4 w-4" />
+                <div className="p-5 rounded-xl bg-[#131518] border border-[#202227] hover:border-[#2E313A] transition flex flex-col justify-between shadow-sm">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#8E8D88] font-semibold">Registered Users</span>
+                    <div className="p-2 bg-[#181A1F] text-[#F4F3EF] rounded-lg border border-[#2A2C34]">
+                      <Users className="h-3.5 w-3.5" />
                     </div>
                   </div>
-                  <h3 className="text-2xl font-black text-white">{stats.data.totalUsers}</h3>
-                  <p className="text-[10px] text-blue-450 font-bold mt-2 flex items-center space-x-1">
+                  <h3 className="text-2xl font-mono font-bold text-[#F4F3EF]">{stats.data.totalUsers}</h3>
+                  <p className="text-[10px] font-mono text-[#D97706] mt-2 flex items-center space-x-1">
                     <TrendingUp className="h-3 w-3" />
                     <span>+{stats.data.newUsersThisWeek} new this week</span>
                   </p>
                 </div>
 
                 {/* Documents Analyzed */}
-                <div className="glass-card bg-[#0e1322]/30 rounded-2xl p-5 border border-white/5 shadow-lg flex flex-col justify-between relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" />
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Analyzed Docs</span>
-                    <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/10">
-                      <FileCheck className="h-4 w-4" />
+                <div className="p-5 rounded-xl bg-[#131518] border border-[#202227] hover:border-[#2E313A] transition flex flex-col justify-between shadow-sm">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#8E8D88] font-semibold">Analyzed Contracts</span>
+                    <div className="p-2 bg-[#10B981]/10 text-[#10B981] rounded-lg border border-[#10B981]/25">
+                      <FileCheck className="h-3.5 w-3.5" />
                     </div>
                   </div>
-                  <h3 className="text-2xl font-black text-white">{stats.data.analyzedDocuments}</h3>
-                  <p className="text-[10px] text-emerald-400 font-bold mt-2">
-                    {stats.data.totalDocuments - stats.data.analyzedDocuments - stats.data.failedDocuments} in analysis queue
+                  <h3 className="text-2xl font-mono font-bold text-[#10B981]">{stats.data.analyzedDocuments}</h3>
+                  <p className="text-[10px] font-mono text-[#8E8D88] mt-2">
+                    {stats.data.totalDocuments - stats.data.analyzedDocuments - stats.data.failedDocuments} queued / active
                   </p>
                 </div>
 
                 {/* Risky Documents */}
-                <div className="glass-card bg-[#0e1322]/30 rounded-2xl p-5 border border-white/5 shadow-lg flex flex-col justify-between relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-rose-500/5 rounded-full blur-xl pointer-events-none" />
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Risky Contracts</span>
-                    <div className="p-2 bg-rose-500/10 text-rose-455 rounded-xl border border-rose-500/10">
-                      <AlertTriangle className="h-4 w-4" />
+                <div className="p-5 rounded-xl bg-[#131518] border border-[#202227] hover:border-[#2E313A] transition flex flex-col justify-between shadow-sm">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#8E8D88] font-semibold">High-Risk Covenants</span>
+                    <div className="p-2 bg-[#E11D48]/10 text-[#E11D48] rounded-lg border border-[#E11D48]/25">
+                      <AlertTriangle className="h-3.5 w-3.5" />
                     </div>
                   </div>
-                  <h3 className="text-2xl font-black text-white">{stats.data.totalRiskyDocuments}</h3>
-                  <p className="text-[10px] text-rose-450 font-bold mt-2">
-                    {Math.round((stats.data.totalRiskyDocuments / (stats.data.analyzedDocuments || 1)) * 100)}% of complete audits
+                  <h3 className="text-2xl font-mono font-bold text-[#E11D48]">{stats.data.totalRiskyDocuments}</h3>
+                  <p className="text-[10px] font-mono text-[#E11D48] mt-2">
+                    {Math.round((stats.data.totalRiskyDocuments / (stats.data.analyzedDocuments || 1)) * 100)}% of completed audits
                   </p>
                 </div>
 
                 {/* Documents Today */}
-                <div className="glass-card bg-[#0e1322]/30 rounded-2xl p-5 border border-white/5 shadow-lg flex flex-col justify-between relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/5 rounded-full blur-xl pointer-events-none" />
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Docs Today</span>
-                    <div className="p-2 bg-purple-500/10 text-purple-400 rounded-xl border border-purple-500/10">
-                      <Clock className="h-4 w-4" />
+                <div className="p-5 rounded-xl bg-[#131518] border border-[#202227] hover:border-[#2E313A] transition flex flex-col justify-between shadow-sm">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#8E8D88] font-semibold">Daily Intake</span>
+                    <div className="p-2 bg-[#181A1F] text-[#D97706] rounded-lg border border-[#2A2C34]">
+                      <Clock className="h-3.5 w-3.5" />
                     </div>
                   </div>
-                  <h3 className="text-2xl font-black text-white">{stats.data.documentsToday}</h3>
-                  <p className="text-[10px] text-purple-400 font-bold mt-2">
+                  <h3 className="text-2xl font-mono font-bold text-[#F4F3EF]">{stats.data.documentsToday}</h3>
+                  <p className="text-[10px] font-mono text-[#8E8D88] mt-2">
                     Avg {stats.data.averageClausesPerDocument} clauses per file
                   </p>
                 </div>
@@ -298,54 +285,55 @@ const AdminDashboard = () => {
           </div>
 
           {/* ROW 2: CHARTS */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             
             {/* LEFT: LINE CHART */}
-            <div className="glass-card bg-[#0e1322]/20 rounded-3xl p-6 border border-white/5 shadow-xl">
-              <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Documents Analyzed — Last 30 Days</h3>
+            <div className="p-5 rounded-xl bg-[#131518] border border-[#202227] shadow-sm">
+              <h3 className="text-xs font-mono font-semibold text-[#8E8D88] uppercase tracking-wider mb-5">Ingestion Trajectory — Last 30 Days</h3>
               {dailyChart.loading ? (
-                <div className="h-[250px] flex items-center justify-center animate-pulse bg-slate-900/40 rounded-2xl" />
+                <div className="h-[240px] flex items-center justify-center animate-pulse bg-[#181A1F] rounded-lg" />
               ) : dailyChart.error ? (
                 <ErrorCard message={dailyChart.error} onRetry={fetchDailyChart} />
               ) : (
-                <div className="h-[250px] w-full">
+                <div className="h-[240px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={dailyChart.data} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                       <XAxis 
                         dataKey="date" 
-                        stroke="#4b5563" 
+                        stroke="#575652" 
                         fontSize={9} 
-                        fontWeight="bold"
+                        fontFamily="JetBrains Mono"
                         tickLine={false} 
                         axisLine={false} 
                         tickFormatter={formatDateTick}
                         interval={5} 
                       />
                       <YAxis 
-                        stroke="#4b5563" 
+                        stroke="#575652" 
                         fontSize={9} 
-                        fontWeight="bold"
+                        fontFamily="JetBrains Mono"
                         tickLine={false} 
                         axisLine={false} 
                         allowDecimals={false}
                       />
                       <Tooltip 
                         contentStyle={{ 
-                          background: '#090d16', 
-                          border: '1px solid rgba(255,255,255,0.08)', 
-                          borderRadius: '12px', 
-                          color: '#fff', 
+                          background: '#181A1F', 
+                          border: '1px solid #202227', 
+                          borderRadius: '8px', 
+                          color: '#F4F3EF', 
                           fontSize: '11px',
+                          fontFamily: 'JetBrains Mono',
                           fontWeight: 'bold'
                         }} 
                       />
                       <Line 
                         type="monotone" 
                         dataKey="count" 
-                        stroke="#4f46e5" 
-                        strokeWidth={3} 
-                        dot={{ r: 3, fill: '#6366f1', strokeWidth: 0 }}
-                        activeDot={{ r: 5 }}
+                        stroke="#D97706" 
+                        strokeWidth={2} 
+                        dot={{ r: 2.5, fill: '#D97706', strokeWidth: 0 }}
+                        activeDot={{ r: 4 }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -354,58 +342,59 @@ const AdminDashboard = () => {
             </div>
 
             {/* RIGHT: DONUT CHART */}
-            <div className="glass-card bg-[#0e1322]/20 rounded-3xl p-6 border border-white/5 shadow-xl relative flex flex-col justify-between">
-              <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Overall Risk Distribution</h3>
+            <div className="p-5 rounded-xl bg-[#131518] border border-[#202227] shadow-sm relative flex flex-col justify-between">
+              <h3 className="text-xs font-mono font-semibold text-[#8E8D88] uppercase tracking-wider mb-5">Platform Risk Aggregation</h3>
               {riskDist.loading ? (
-                <div className="h-[250px] flex items-center justify-center animate-pulse bg-slate-900/40 rounded-2xl" />
+                <div className="h-[240px] flex items-center justify-center animate-pulse bg-[#181A1F] rounded-lg" />
               ) : riskDist.error ? (
                 <ErrorCard message={riskDist.error} onRetry={fetchRiskDist} />
               ) : (
-                <div className="relative h-[250px] flex items-center justify-center">
+                <div className="relative h-[240px] flex items-center justify-center">
                   
                   {/* Center Overlay Text */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest">Risk</span>
-                    <span className="text-xs font-extrabold text-white">Overview</span>
+                    <span className="text-[9px] text-[#575652] font-mono uppercase tracking-widest">Risk</span>
+                    <span className="text-xs font-mono font-bold text-[#F4F3EF]">Portfolio</span>
                   </div>
 
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
                         data={[
-                          { name: 'Safe', value: riskDist.data.safe, color: '#22c55e' },
-                          { name: 'Caution', value: riskDist.data.caution, color: '#f59e0b' },
-                          { name: 'Risky', value: riskDist.data.risky, color: '#ef4444' }
+                          { name: 'Safe', value: riskDist.data.safe, color: '#10B981' },
+                          { name: 'Caution', value: riskDist.data.caution, color: '#D97706' },
+                          { name: 'Risky', value: riskDist.data.risky, color: '#E11D48' }
                         ].filter(item => item.value > 0)}
                         cx="50%"
                         cy="50%"
-                        innerRadius={65}
-                        outerRadius={95}
+                        innerRadius={60}
+                        outerRadius={88}
                         paddingAngle={3}
                         dataKey="value"
                       >
                         {[
-                          { name: 'Safe', value: riskDist.data.safe, color: '#22c55e' },
-                          { name: 'Caution', value: riskDist.data.caution, color: '#f59e0b' },
-                          { name: 'Risky', value: riskDist.data.risky, color: '#ef4444' }
+                          { name: 'Safe', value: riskDist.data.safe, color: '#10B981' },
+                          { name: 'Caution', value: riskDist.data.caution, color: '#D97706' },
+                          { name: 'Risky', value: riskDist.data.risky, color: '#E11D48' }
                         ].filter(item => item.value > 0).map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
                       <Tooltip contentStyle={{ 
-                        background: '#090d16', 
-                        border: '1px solid rgba(255,255,255,0.08)', 
-                        borderRadius: '12px', 
-                        color: '#fff', 
+                        background: '#181A1F', 
+                        border: '1px solid #202227', 
+                        borderRadius: '8px', 
+                        color: '#F4F3EF', 
                         fontSize: '11px',
+                        fontFamily: 'JetBrains Mono',
                         fontWeight: 'bold'
                       }} />
                       <Legend 
                         verticalAlign="bottom" 
-                        height={36} 
+                        height={32} 
                         formatter={(value, entry) => {
                           const val = entry.payload.value;
-                          return <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">{value} ({val})</span>;
+                          return <span className="text-[10px] font-mono text-[#8E8D88] uppercase tracking-wide">{value} ({val})</span>;
                         }} 
                       />
                     </PieChart>
@@ -417,36 +406,36 @@ const AdminDashboard = () => {
           </div>
 
           {/* ROW 3: TYPE BREAKDOWN & RISKY CLAUSES */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             
             {/* LEFT: HORIZONTAL BAR CHART */}
-            <div className="glass-card bg-[#0e1322]/20 rounded-3xl p-6 border border-white/5 shadow-xl">
-              <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Documents by Type</h3>
+            <div className="p-5 rounded-xl bg-[#131518] border border-[#202227] shadow-sm">
+              <h3 className="text-xs font-mono font-semibold text-[#8E8D88] uppercase tracking-wider mb-5">Contracts by Jurisdiction / Type</h3>
               {docTypes.loading ? (
-                <div className="h-[280px] flex items-center justify-center animate-pulse bg-slate-900/40 rounded-2xl" />
+                <div className="h-[260px] flex items-center justify-center animate-pulse bg-[#181A1F] rounded-lg" />
               ) : docTypes.error ? (
                 <ErrorCard message={docTypes.error} onRetry={fetchDocTypes} />
               ) : docTypes.data.length === 0 ? (
-                <p className="text-xs text-slate-500 italic text-center py-16">No document types registered yet.</p>
+                <p className="text-xs text-[#575652] italic text-center py-16">No document types registered yet.</p>
               ) : (
-                <div className="h-[280px] w-full">
+                <div className="h-[260px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       layout="vertical"
                       data={docTypes.data}
                       margin={{ top: 0, right: 10, left: -10, bottom: 0 }}
                     >
-                      <XAxis type="number" stroke="#4b5563" fontSize={9} fontWeight="bold" tickLine={false} axisLine={false} />
+                      <XAxis type="number" stroke="#575652" fontSize={9} fontFamily="JetBrains Mono" tickLine={false} axisLine={false} />
                       <YAxis 
                         type="category" 
                         dataKey="type" 
-                        stroke="#4b5563" 
+                        stroke="#575652" 
                         fontSize={9} 
-                        fontWeight="bold" 
+                        fontFamily="JetBrains Mono"
                         tickLine={false} 
                         axisLine={false} 
                         tickFormatter={formatDocType}
-                        width={90}
+                        width={95}
                       />
                       <Tooltip 
                         formatter={(value, name) => {
@@ -454,16 +443,17 @@ const AdminDashboard = () => {
                           return [value, label];
                         }}
                         contentStyle={{ 
-                          background: '#090d16', 
-                          border: '1px solid rgba(255,255,255,0.08)', 
-                          borderRadius: '12px', 
-                          color: '#fff', 
+                          background: '#181A1F', 
+                          border: '1px solid #202227', 
+                          borderRadius: '8px', 
+                          color: '#F4F3EF', 
                           fontSize: '11px',
+                          fontFamily: 'JetBrains Mono',
                           fontWeight: 'bold'
                         }} 
                       />
-                      <Bar dataKey="count" fill="#4f46e5" radius={[0, 4, 4, 0]} barSize={12} />
-                      <Bar dataKey="riskyCount" fill="#ef4444" radius={[0, 4, 4, 0]} barSize={12} />
+                      <Bar dataKey="count" fill="#D97706" radius={[0, 4, 4, 0]} barSize={10} />
+                      <Bar dataKey="riskyCount" fill="#E11D48" radius={[0, 4, 4, 0]} barSize={10} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -471,19 +461,19 @@ const AdminDashboard = () => {
             </div>
 
             {/* RIGHT: TOP RISKY CLAUSES LIST */}
-            <div className="glass-card bg-[#0e1322]/20 rounded-3xl p-6 border border-white/5 shadow-xl flex flex-col justify-between">
+            <div className="p-5 rounded-xl bg-[#131518] border border-[#202227] shadow-sm flex flex-col justify-between">
               <div>
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Most Commonly Risky Clauses</h3>
-                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1 mb-6">Across all analyzed documents</p>
+                <h3 className="text-xs font-mono font-semibold text-[#8E8D88] uppercase tracking-wider">Most Flagged Covenants</h3>
+                <p className="text-[10px] text-[#575652] font-mono mt-0.5 mb-5">Ranked across institutional document audits</p>
                 
                 {riskyClauses.loading ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <div key={i} className="flex items-center space-x-3 animate-pulse">
-                        <div className="h-6 w-6 bg-slate-900 rounded-full shrink-0"></div>
-                        <div className="flex-1 space-y-2">
-                          <div className="h-3 bg-slate-900 rounded w-1/3"></div>
-                          <div className="h-2 bg-slate-900 rounded w-full"></div>
+                        <div className="h-5 w-5 bg-[#181A1F] rounded shrink-0"></div>
+                        <div className="flex-1 space-y-1.5">
+                          <div className="h-2.5 bg-[#181A1F] rounded w-1/3"></div>
+                          <div className="h-2 bg-[#181A1F] rounded w-full"></div>
                         </div>
                       </div>
                     ))}
@@ -491,30 +481,29 @@ const AdminDashboard = () => {
                 ) : riskyClauses.error ? (
                   <ErrorCard message={riskyClauses.error} onRetry={fetchRiskyClauses} />
                 ) : riskyClauses.data.length === 0 ? (
-                  <p className="text-xs text-slate-500 italic text-center py-16">No risky clauses detected on the platform.</p>
+                  <p className="text-xs text-[#575652] italic text-center py-16">No risky clauses detected on the platform.</p>
                 ) : (
-                  <div className="space-y-4 max-h-[260px] overflow-y-auto pr-1 scrollbar-thin">
+                  <div className="space-y-3.5 max-h-[250px] overflow-y-auto pr-1">
                     {riskyClauses.data.map((clause, index) => {
                       const maxVal = Math.max(...riskyClauses.data.map(c => c.riskyCount), 1);
                       const percent = Math.round((clause.riskyCount / maxVal) * 100);
 
                       return (
-                        <div key={index} className="space-y-1.5">
-                          <div className="flex justify-between items-center text-xs font-bold">
-                            <div className="flex items-center space-x-2.5 min-w-0 pr-3">
-                              <span className="h-5 w-5 rounded-full bg-slate-900 flex items-center justify-center text-[10px] text-slate-400 border border-white/5 shrink-0">
+                        <div key={index} className="space-y-1">
+                          <div className="flex justify-between items-center text-xs">
+                            <div className="flex items-center space-x-2 min-w-0 pr-3">
+                              <span className="h-4 w-4 rounded bg-[#181A1F] flex items-center justify-center text-[10px] font-mono text-[#8E8D88] border border-[#202227] shrink-0">
                                 {index + 1}
                               </span>
-                              <span className="text-slate-200 truncate">{clause.title}</span>
+                              <span className="text-[#F4F3EF] truncate text-xs font-medium">{clause.title}</span>
                             </div>
-                            <span className="px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-455 border border-rose-500/10 text-[10px] uppercase font-black shrink-0">
-                              {clause.riskyCount} Hits
+                            <span className="px-1.5 py-0.2 rounded bg-rose-500/10 text-[#E11D48] border border-rose-500/20 text-[10px] font-mono font-semibold shrink-0">
+                              {clause.riskyCount} Flags
                             </span>
                           </div>
-                          {/* Progress Line */}
-                          <div className="w-full h-1 bg-slate-950/80 rounded-full overflow-hidden border border-slate-900/50">
+                          <div className="w-full h-1 bg-[#0A0B0D] rounded-full overflow-hidden border border-[#202227]">
                             <div 
-                              className="bg-rose-500 h-full rounded-full transition-all duration-300" 
+                              className="bg-[#E11D48] h-full rounded-full transition-all duration-200" 
                               style={{ width: `${percent}%` }}
                             />
                           </div>
@@ -529,35 +518,34 @@ const AdminDashboard = () => {
           </div>
 
           {/* ROW 4: RECENT ACTIVITY TABLE */}
-          <div className="glass-card bg-[#0e1322]/20 rounded-3xl p-6 border border-white/5 shadow-xl">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Recent Document Analyses</h3>
-              <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-widest">Platform Activity</span>
+          <div className="rounded-xl bg-[#131518] border border-[#202227] shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-[#202227] flex justify-between items-center bg-[#0E0F12]">
+              <h3 className="text-xs font-mono font-semibold text-[#F4F3EF] uppercase tracking-wider">Live Platform Audit Stream</h3>
+              <span className="text-[10px] text-[#575652] font-mono uppercase tracking-widest">Global Activity</span>
             </div>
 
             {recentActivity.loading ? (
-              <div className="space-y-3">
-                <div className="h-8 bg-slate-900 rounded-lg animate-pulse" />
-                <div className="h-8 bg-slate-900 rounded-lg animate-pulse" />
-                <div className="h-8 bg-slate-900 rounded-lg animate-pulse" />
+              <div className="p-5 space-y-2">
+                <div className="h-6 bg-[#181A1F] rounded animate-pulse" />
+                <div className="h-6 bg-[#181A1F] rounded animate-pulse" />
               </div>
             ) : recentActivity.error ? (
               <ErrorCard message={recentActivity.error} onRetry={fetchRecentActivity} />
             ) : recentActivity.data.length === 0 ? (
-              <p className="text-xs text-slate-500 italic text-center py-10">No activities recorded yet.</p>
+              <p className="text-xs text-[#575652] italic text-center py-10">No activities recorded yet.</p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-left text-xs font-semibold">
+                <table className="w-full border-collapse text-left text-xs font-sans">
                   <thead>
-                    <tr className="border-b border-white/5 text-slate-450 uppercase tracking-widest text-[9px]">
-                      <th className="py-3.5 px-4">Document Name</th>
-                      <th className="py-3.5 px-4">Type</th>
-                      <th className="py-3.5 px-4">Risk Level</th>
-                      <th className="py-3.5 px-4">User</th>
-                      <th className="py-3.5 px-4 text-right">Analyzed At</th>
+                    <tr className="border-b border-[#202227] text-[#8E8D88] font-mono uppercase tracking-wider text-[10px] bg-[#0A0B0D]">
+                      <th className="py-2.5 px-4">Document</th>
+                      <th className="py-2.5 px-4">Type</th>
+                      <th className="py-2.5 px-4">Risk Level</th>
+                      <th className="py-2.5 px-4">Operator</th>
+                      <th className="py-2.5 px-4 text-right">Analyzed At</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-[#202227]">
                     {recentActivity.data.map((activity, index) => {
                       const isRisky = activity.riskLevel === 'risky';
                       const isCaution = activity.riskLevel === 'caution';
@@ -565,29 +553,29 @@ const AdminDashboard = () => {
                       return (
                         <tr 
                           key={activity._id || index}
-                          className="hover:bg-slate-900/15 transition-colors duration-150 odd:bg-slate-950/5 even:bg-slate-950/20"
+                          className="hover:bg-[#181A1F] transition-colors duration-150"
                         >
-                          <td className="py-3.5 px-4 font-bold text-white max-w-[200px] truncate">
+                          <td className="py-2.5 px-4 font-semibold text-[#F4F3EF] max-w-[200px] truncate">
                             {activity.documentName}
                           </td>
-                          <td className="py-3.5 px-4 text-slate-350">
+                          <td className="py-2.5 px-4 text-[#8E8D88] font-mono text-[11px]">
                             {formatDocType(activity.documentType)}
                           </td>
-                          <td className="py-3.5 px-4">
-                            <span className={`px-2 py-0.5 rounded-md text-[10px] uppercase font-black border ${
+                          <td className="py-2.5 px-4">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-semibold border ${
                               isRisky 
-                                ? 'bg-rose-500/10 text-rose-400 border-rose-500/10' 
+                                ? 'bg-rose-500/10 text-[#E11D48] border-rose-500/20' 
                                 : isCaution 
-                                  ? 'bg-amber-500/10 text-amber-450 border-amber-500/10' 
-                                  : 'bg-emerald-500/10 text-emerald-450 border-emerald-500/10'
+                                  ? 'bg-[#D97706]/10 text-[#D97706] border-[#D97706]/30' 
+                                  : 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/25'
                             }`}>
                               {activity.riskLevel || 'Safe'}
                             </span>
                           </td>
-                          <td className="py-3.5 px-4 text-slate-350">
+                          <td className="py-2.5 px-4 text-[#C6C5BF]">
                             {activity.userName}
                           </td>
-                          <td className="py-3.5 px-4 text-slate-450 text-right">
+                          <td className="py-2.5 px-4 text-[#8E8D88] font-mono text-[11px] text-right">
                             {getRelativeTime(activity.createdAt)}
                           </td>
                         </tr>
